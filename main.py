@@ -48,7 +48,13 @@ show(image_b, 'Bin')
 
 #Contours - identify Objects
 objs_yes,objs_not = identifyObjects(image)
+#find and save the minimal image of each object
+imagesSave(image,objs_yes)
 
+k=0
+for obj in objs_yes:
+	k +=1
+	show(obj.img,"f"+str(k))
 
 #Draw the contours and the center of mass
 image = drawCnts(image,objs_yes,objs_not)
@@ -57,7 +63,7 @@ image = drawCnts(image,objs_yes,objs_not)
 show(image,"Contornos")
 
 #save image
-cv2.imwrite('imgs/saida.jpg',image)
+#thicknesscv2.imwrite('imgs/saida.jpg',image)
 
 cv2.waitKey(0)
 

@@ -24,8 +24,8 @@ def categoryCnts(img,contours):
 	return objs_yes, objs_not
 
 #Identify all objets and save the contours
-def identifyObjects(image, draw = True):
-	image_b = binaryImg(image)
+def identifyObjects(img, draw = True):
+	image_b = binaryImg(img)
 
 	#Erosion for connect the near objects
 	kernel = cv2.getStructuringElement(cv2.MORPH_RECT,(5,5))
@@ -37,34 +37,49 @@ def identifyObjects(image, draw = True):
 
 	#find the center of mass of each object
 	for obj in objs_yes:
-		obj.moments(image.shape)
+		obj.moments(img.shape)
 
 	return objs_yes,objs_not
 
+#find and save the minimal image of each object
+def imagesSave(img,objs):
+
+	for obj in objs:
+		obj.imageSave(img)
+
 
 #Draw the contours and the center of mass
-def drawCnts(image,objs_yes,objs_not, thickness = 7):
+def drawCnts(img,objs_yes,objs_not, thickness = 7):
+
+	img = img.copy()
 
 	#Converting if is not BRG
-	if len(image.shape) is 2:
-		image = cv2.cvtColor(image,cv2.COLOR_GRAY2BGR)
+	if len(img.shape) is 2:
+		img = cv2.cvtColor(img,cv2.COLOR_GRAY2BGR)
 
 	#Draw in green contours accepted
 	for obj in objs_yes:
-		cv2.drawContours(image,obj.cnt,-1,(0,255,0),thickness)
+		cv2.drawContours(img,obj.cnt,-1,(0,255,0),thickness)
 
 	#Draw in red contours refused
 	for obj in objs_not:
-		cv2.drawContours(image,obj.cnt,-1,(0,0,255),thickness)
+		cv2.drawContours(img,obj.cnt,-1,(0,0,255),thickness)
 
 	#Draw the center of mass of each object in blue
 	for obj in objs_yes:
-		cv2.circle(image, obj.pt_img,2*thickness, (255,0,0),-1)
+		cv2.circle(img, obj.pt_img,2*thickness, (255,0,0),-1)
 
 		#converting points
 		pt_text = (obj.pt_img[0]+100,obj.pt_img[1]+100)
 
 		#write text
-		cv2.putText(image,str(obj.pt),pt_text,cv2.FONT_HERSHEY_SIMPLEX,1.5, (255,0,0),thickness/2 )
+		cv2.putText(img,str(obj.pt),pt_text,cv2.FONT_HERSHEY_SIMPLEX,1.5, (255,0,0),thickness/2 )
 
-	return image
+	#Draw a rectangle of each obj
+	for obj in objs_yes:
+		box = cv2.boxPoints(obj.rect)
+		box = np.rint(box).astype(int)
+		img = cv2.drawContours(img,[box],-1,(255,0,255),thickness)
+
+	return img
+
