@@ -2,7 +2,7 @@
 
 Oficinas 2 - UTFPR
 
-## Dependências:
+## Dependencies:
 
 Python = 2.7
 

@@ -11,9 +11,31 @@ import numpy as np
 #==============
 #====DEFINES
 #==============
-SIZE_IMG = 700 #default size image
-AREA_MIN = 1000
-AREA_MAX = 10000
+SIZE_IMG = 800 #default size image
+SIDE = 1000 #for the cartesian plan
+AREA_MIN = SIDE*SIDE*0.003
+AREA_MAX = SIDE*SIDE*0.015
+
+class Object(object):
+	cnt = None #conturs
+	pt = None  #Point in Cartesian plane
+	pt_img = None #Point in pixel
+	area = None #area
+
+	def __init__(self, cnt, area = None):
+		self.cnt = cnt
+		self.area = area
+
+	#find the center of mass 
+	#shape is the image.shape where be all objects
+	def moments(self,shape):
+		mu = cv2.moments(self.cnt)
+		#calculate the center of mass and rint to int
+		self.pt_img = (np.rint(mu["m10"]/mu["m00"]).astype(int),np.rint(mu["m01"]/mu["m00"]).astype(int))
+
+		#Converting to cartesian plane
+		self.pt= (valmap(self.pt_img[0],0,shape[1],0,SIDE),
+			     valmap(self.pt_img[1],0,shape[0],SIDE,0))
 
 # Resize to the max size to be max_size
 def resize(image, max_size = SIZE_IMG):
@@ -38,3 +60,9 @@ def binaryImg(img, scale = 0.5):
 	#_,binary_img = cv2.threshold(gray_img,int(255*scale),255,cv2.THRESH_BINARY_INV) #for the inverted image
 	_,binary_img = cv2.threshold(gray_img,int(255*scale),255,cv2.THRESH_BINARY)
 	return binary_img
+
+#converting value in  [in_min,in_max] to [out_min,out_max] keeping the scale
+def valmap(value, in_min, in_max, out_min, out_max, is_int = True):
+	if is_int:
+  		return np.rint(out_min + (out_max - out_min) * (1.0*(value - in_min) / (in_max - in_min))).astype(int)
+  	return out_min + (out_max - out_min) * (1.0*(value - in_min) / (in_max - in_min))

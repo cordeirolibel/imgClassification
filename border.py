@@ -53,14 +53,14 @@ def cutBorder(img, fix_size = False, size = SIZE_IMG):
 	#We have 2 options (uncomment):
 
 	#  Option 1:Resize
-	#Resize to the max size to be "size" - default SIZE_IMG
+	#Resize to the max size to be SIZE_IMG
 	#img_size = img.shape
-	#scale,small_img = resize(img,size)
+	#scale,small_img = resize(img,SIZE_IMG)
 
 	#  Option 2: Not Resize
 	img_size = img.shape
 	small_img = img
-	scale = 1
+	scale = 1.0
 
 	# ==> Step 2: Binary image
 	#Transform in a binary image
@@ -83,10 +83,7 @@ def cutBorder(img, fix_size = False, size = SIZE_IMG):
 	# ==> Step 4: Cut
 
 	#Coordinates of the corresponding quadrangle vertices in the destination image.
-	if fix_size:
-		dst = [[0,0],[size,0],[0,size],[size,size]]
-	else:
-		dst = [[0,0],[img_size[1],0],[0,img_size[0]],[img_size[1],img_size[0]]]
+	dst = [[0,0],[img_size[1],0],[0,img_size[0]],[img_size[1],img_size[0]]]
 
 	#return to original scale
 	#rint = mean each item, dot =  array*scalar
@@ -98,9 +95,6 @@ def cutBorder(img, fix_size = False, size = SIZE_IMG):
 
 	#Transform and cut
 	M = cv2.getPerspectiveTransform(src,dst)
-	if fix_size:
-		warped = cv2.warpPerspective(img, M, (size, size))
-	else:
-		warped = cv2.warpPerspective(img, M, (img_size[1], img_size[0]))
+	warped = cv2.warpPerspective(img, M, (img_size[1], img_size[0]))
 
 	return warped
