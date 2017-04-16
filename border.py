@@ -1,5 +1,5 @@
-#>>>>>>>>       Cutting Border Functions      <<<<<<<<<<#
-#        Cordeiro Libel - UTFPR - April of 2016         #
+#>>>>>>>>	   Cutting Border Functions	      <<<<<<<<<<#
+#		Cordeiro Libel - UTFPR - April of 2016	  	    #
 #-------------------------------------------------------#
 
 #My libraries
@@ -25,10 +25,10 @@ def findCorner(points,x_max,y_max):
 
 	#save the distance^2 of each point to the vertices of the image
 	for pt in points:
-		length['NW'].append((pt[0]-  0  )**2 + (pt[1]-  0  )**2) 
-		length['NE'].append((x_max-pt[0])**2 + (pt[1]-  0  )**2)
-		length['SW'].append((pt[0]-  0  )**2 + (y_max-pt[1])**2)
-		length['SE'].append((x_max-pt[0])**2 + (y_max-pt[1])**2)
+		length['NW'].append((pt[0]-  0  ) + (pt[1]-  0  )) 
+		length['NE'].append((x_max-pt[0]) + (pt[1]-  0  ))
+		length['SW'].append((pt[0]-  0  ) + (y_max-pt[1]))
+		length['SE'].append((x_max-pt[0]) + (y_max-pt[1]))
 		length['Point'].append(pt) 
 
 	#save point closer NW vertice
@@ -44,10 +44,14 @@ def findCorner(points,x_max,y_max):
 	index = length['SE'].index(min(length['SE']))
 	four_points[3] = points[index]
 
+	#Mean of size in pixels
+	size_x = toInt((four_points[1][0] - four_points[0][0]+four_points[3][0]- four_points[2][0])/2)
+	size_y = toInt((four_points[2][1] - four_points[0][1]+four_points[3][1]- four_points[1][1])/2)
+
 	return four_points
 
 
-def cutBorder(img, fix_size = False, size = SIZE_IMG):
+def cutBorder(img, fix_size = True, size = SIDE, inv = False):
 	# ==> Step 1: Resize 
 
 	#We have 2 options (uncomment):
@@ -64,7 +68,7 @@ def cutBorder(img, fix_size = False, size = SIZE_IMG):
 
 	# ==> Step 2: Binary image
 	#Transform in a binary image
-	binary_img = binaryImg(small_img)
+	binary_img = binaryImg(small_img, inv = inv)
 
 	# ==> Step 3: Contour
 	# Find all external contours
@@ -77,13 +81,16 @@ def cutBorder(img, fix_size = False, size = SIZE_IMG):
 	four_points = findCorner(cnt,small_img.shape[1],small_img.shape[0])
 
 	#uncomment to print contours
-	#cv2.drawContours(small_img,[cnt],-1,(255,0,0),5)
+	#cv2.drawContours(small_img,[four_points],-1,(255,0,0),5)
 	#show(small_img)
 
 	# ==> Step 4: Cut
 
 	#Coordinates of the corresponding quadrangle vertices in the destination image.
-	dst = [[0,0],[img_size[1],0],[0,img_size[0]],[img_size[1],img_size[0]]]
+	if fix_size:
+		dst = [[0,0],[size,0],[0,size],[size,size]]
+	else:
+		dst = [[0,0],[img_size[1],0],[0,img_size[0]],[img_size[1],img_size[0]]]
 
 	#return to original scale
 	#rint = mean each item, dot =  array*scalar
@@ -95,6 +102,9 @@ def cutBorder(img, fix_size = False, size = SIZE_IMG):
 
 	#Transform and cut
 	M = cv2.getPerspectiveTransform(src,dst)
-	warped = cv2.warpPerspective(img, M, (img_size[1], img_size[0]))
+	if fix_size:
+		warped = cv2.warpPerspective(img, M, (size, size))
+	else:
+		warped = cv2.warpPerspective(img, M, (img_size[1], img_size[0]))
 
 	return warped

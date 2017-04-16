@@ -1,5 +1,5 @@
-#>>>>>>>>    Image classification - OpenCV    <<<<<<<<<<#
-#        Cordeiro Libel - UTFPR - April of 2016         #
+#>>>>>>>>	Image classification - OpenCV	  <<<<<<<<<<#
+#		Cordeiro Libel - UTFPR - April of 2016		    #
 #-------------------------------------------------------#
 
 #My libraries
@@ -29,7 +29,8 @@ from identify import *
 #=============================================
 #======CAPTURE IMAGE FROM FILE
 #=============================================
-image = cv2.imread('imgs/foto.jpg')
+image = cv2.imread('imgs/objs1.jpg')
+inv = False
 #=============================================
 
 
@@ -37,14 +38,12 @@ image = cv2.imread('imgs/foto.jpg')
 #size,image = resize(image,SIZE_IMG)
 
 #show(image, 'Original')
-image = cutBorder(image)
-
-
+image = cutBorder(image, inv = inv)
 #show(image, 'Without Border')
 
 image_b = binaryImg(image)
 
-show(image_b, 'Bin')
+#show(image_b, 'Bin')
 
 #Contours - identify Objects
 objs_yes,objs_not = identifyObjects(image)
@@ -54,16 +53,16 @@ imagesSave(image,objs_yes)
 k=0
 for obj in objs_yes:
 	k +=1
-	show(obj.img,"f"+str(k))
+	#show(obj.img,"f"+str(k))
 
 #Draw the contours and the center of mass
-image = drawCnts(image,objs_yes,objs_not)
+image = drawCnts(image,objs_yes,objs_not, 5)
 
 
 show(image,"Contornos")
 
 #save image
-#thicknesscv2.imwrite('imgs/saida.jpg',image)
+#cv2.imwrite('imgs/saida.jpg',image)
 
 cv2.waitKey(0)
 
