@@ -41,9 +41,32 @@ inv = False
 image = cutBorder(image, inv = inv)
 #show(image, 'Without Border')
 
+blue, green, red = cv2.split(image)
+
 image_b = binaryImg(image)
 
-#show(image_b, 'Bin')
+
+
+
+
+
+imgHSV = cv2.cvtColor(image,cv2.COLOR_BGR2HSV)
+
+mask = cv2.inRange(imgHSV, np.array([0,0,0]), np.array([180,255,120]))
+
+image_mask = cv2.bitwise_and(image,image, mask = mask)
+
+show(image, 'image')
+#image = cv2.cvtColor(imgThreshold,cv2.COLOR_HSV2BGR)
+show(mask, 'mask')
+show(image_mask, 'image_mask')
+
+image = cv2.addWeighted(image_mask, 1.0, image, 1.0, 0)
+show(image, 'image2')
+
+
+
+
 
 #Contours - identify Objects
 objs_yes,objs_not = identifyObjects(image)

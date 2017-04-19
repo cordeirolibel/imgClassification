@@ -20,7 +20,6 @@ while True:
 		break
 
 	image = cutBorder(image)
-
 	
 	#Contours - identify Objects
 	objs_yes,_ = identifyObjects(image)
@@ -36,4 +35,4 @@ while True:
 	
 	print("objs"+str(k))
 	k+=1
-print("Fim")
+print("End =)")
