@@ -13,8 +13,8 @@ import numpy as np
 #==============
 SIZE_IMG = 700 #default size image
 SIDE = 1000 #for the cartesian plan
-AREA_MIN = SIDE*SIDE*0.010
-AREA_MAX = SIDE*SIDE*0.040
+AREA_MIN = SIDE*SIDE*0.009
+AREA_MAX = SIDE*SIDE*0.030
 
 class Object(object):
 	cnt = None #conturs

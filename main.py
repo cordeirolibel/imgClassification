@@ -7,6 +7,7 @@ from commons import *
 from border import *
 from identify import *
 
+
 #=============================================
 #======MAIN
 #=============================================
@@ -29,44 +30,13 @@ from identify import *
 #=============================================
 #======CAPTURE IMAGE FROM FILE
 #=============================================
-image = cv2.imread('imgs/objs1.jpg')
+image = cv2.imread('imgs/objs6.jpg')
 inv = False
 #=============================================
 
-
-# Resize to the max size to be SIZE_IMG
-#size,image = resize(image,SIZE_IMG)
-
-#show(image, 'Original')
+show(image, 'Original')
 image = cutBorder(image, inv = inv)
-#show(image, 'Without Border')
-
-blue, green, red = cv2.split(image)
-
-image_b = binaryImg(image)
-
-
-
-
-
-
-imgHSV = cv2.cvtColor(image,cv2.COLOR_BGR2HSV)
-
-mask = cv2.inRange(imgHSV, np.array([0,0,0]), np.array([180,255,120]))
-
-image_mask = cv2.bitwise_and(image,image, mask = mask)
-
-show(image, 'image')
-#image = cv2.cvtColor(imgThreshold,cv2.COLOR_HSV2BGR)
-show(mask, 'mask')
-show(image_mask, 'image_mask')
-
-image = cv2.addWeighted(image_mask, 1.0, image, 1.0, 0)
-show(image, 'image2')
-
-
-
-
+show(image, 'Without Border')
 
 #Contours - identify Objects
 objs_yes,objs_not = identifyObjects(image)

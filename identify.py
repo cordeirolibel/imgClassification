@@ -26,6 +26,10 @@ def categoryCnts(img,contours):
 
 #Identify all objets and save the contours
 def identifyObjects(img, draw = True, inv = False):
+	#remove shawdow, because it is not an object
+	img = shadowRemove(img)
+
+	#show(img,"sem sombra")
 	image_b = binaryImg(img, inv = inv)
 
 	#Erosion and Dilate for connect the near objects
@@ -49,9 +53,25 @@ def imagesSave(img,objs):
 	for obj in objs:
 		obj.imageSave(img)
 
+#remove the simple shadow (not all shadow)
+def shadowRemove(img):
+	imgHSV = cv2.cvtColor(img,cv2.COLOR_BGR2HSV)
+
+	#colors filter between color 1 and color2
+	mask = cv2.inRange(imgHSV,  np.array([0,0,0]),  np.array([255,120,179]))
+
+	#removing noise of mask
+	kernel = cv2.getStructuringElement(cv2.MORPH_RECT,(4,4))
+	mask = cv2.morphologyEx(mask, cv2.MORPH_HITMISS, kernel)
+
+	#Join mask with the img
+	img = img.copy()
+	img[mask > 0] = 255
+
+	return img
 
 #Draw the contours and the center of mass
-def drawCnts(img,objs_yes,objs_not, thickness = 5):
+def drawCnts(img,objs_yes,objs_not, thickness = 4):
 
 	img = img.copy()
 
