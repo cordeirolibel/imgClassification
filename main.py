@@ -30,7 +30,7 @@ from identify import *
 #=============================================
 #======CAPTURE IMAGE FROM FILE
 #=============================================
-image = cv2.imread('imgs/objs6.jpg')
+image = cv2.imread('imgs/objs1.jpg')
 inv = False
 #=============================================
 
@@ -40,8 +40,9 @@ show(image, 'Without Border')
 
 #Contours - identify Objects
 objs_yes,objs_not = identifyObjects(image)
-#find and save the minimal image of each object
-imagesSave(image,objs_yes)
+
+#Calculate attributes for the Deep Learning
+attributes(image,objs_yes)
 
 k=0
 for obj in objs_yes:
@@ -49,7 +50,7 @@ for obj in objs_yes:
 	#show(obj.img,"f"+str(k))
 
 #Draw the contours and the center of mass
-image = drawCnts(image,objs_yes,objs_not, 5)
+image = drawCnts(image,objs_yes,objs_not, attributes = True)
 
 
 show(image,"Contornos")

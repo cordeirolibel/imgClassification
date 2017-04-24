@@ -42,23 +42,53 @@ def identifyObjects(img, draw = True, inv = False):
 	_,contours,_ = cv2.findContours(image_b,cv2.RETR_LIST ,cv2.CHAIN_APPROX_SIMPLE )
 	objs_yes,objs_not = categoryCnts(image_b,contours)
 
-	#find the center of mass of each object
-	for obj in objs_yes:
-		obj.moments(img.shape)
-
 	return objs_yes,objs_not
 
-#find and save the minimal image of each object
-def imagesSave(img,objs):
+#Calculate attributes for the Deep Learning
+def attributes(img,objs):
+	
 	for obj in objs:
-		obj.imageSave(img)
+		if img is not None:
+			#Save the minimal image of each object
+			obj.imageSave(img)
+
+			#Find the center of mass of each object
+			obj.moments(img.shape)
+
+		#Distance of mass center and rectangle center
+		box = cv2.boxPoints(obj.rect)
+		center_pt = [np.mean(box[:,0]),np.mean(box[:,1])]
+		obj.deform = np.sqrt((center_pt[0]-obj.pt_img[0])**2+(center_pt[1]-obj.pt_img[1])**2)
+
+		#Square sum of the distance of contours and mean of contours
+		dists = []
+		for pt in obj.cnt:
+			dists.append(np.sqrt((obj.pt_img[0]-pt[0,0])**2+(obj.pt_img[1]-pt[0,1])**2))
+		mean = np.mean(dists) #distance mean of contours and mass center
+		obj.circle = 0.0
+		for dist in dists:
+			obj.circle += (mean-dist)**2
+		obj.circle = obj.circle/len(dists)
+		
+		#Reason between the large and small size
+		obj.oblong = 1.0*obj.img.shape[1]/obj.img.shape[0]
+
+		#Contour perimeter
+		obj.perimeter = cv2.arcLength(obj.cnt,True)
+
+		#Intensity of colors <=====================Ver melhor isso ak, ele tira a media junto com a borda que eh sempre branca(todas as cores)
+		mean_colors = cv2.mean(obj.img)
+		obj.blue = mean_colors[0]
+		obj.green = mean_colors[1]
+		obj.red = mean_colors[2]
+		obj.red_per_blue = obj.red/obj.blue
 
 #remove the simple shadow (not all shadow)
 def shadowRemove(img):
 	imgHSV = cv2.cvtColor(img,cv2.COLOR_BGR2HSV)
 
 	#colors filter between color 1 and color2
-	mask = cv2.inRange(imgHSV,  np.array([0,0,0]),  np.array([255,120,179]))
+	mask = cv2.inRange(imgHSV,  np.array([0,0,0]),  np.array([255,130,179]))
 
 	#removing noise of mask
 	kernel = cv2.getStructuringElement(cv2.MORPH_RECT,(4,4))
@@ -71,7 +101,7 @@ def shadowRemove(img):
 	return img
 
 #Draw the contours and the center of mass
-def drawCnts(img,objs_yes,objs_not, thickness = 4):
+def drawCnts(img,objs_yes,objs_not, thickness = 3, attributes = False):
 
 	img = img.copy()
 
@@ -91,17 +121,34 @@ def drawCnts(img,objs_yes,objs_not, thickness = 4):
 	for obj in objs_yes:
 		box = cv2.boxPoints(obj.rect)
 		box = toInt(box)
-		img = cv2.drawContours(img,[box],-1,(255,0,255),thickness)
+		img = cv2.drawContours(img,[box],-1,(255,50,255),thickness)
 
 	#Draw the center of mass of each object in blue
 	for obj in objs_yes:
-		cv2.circle(img, obj.pt_img,2*thickness, (255,0,0),-1)
+		cv2.circle(img, (toInt(obj.pt_img)),2*thickness, (0,0,0),-1)
 
 		#converting points
-		pt_text = (obj.pt_img[0]+50,obj.pt_img[1]+50)
+		pt_text = (int(obj.pt_img[0])+25,int(obj.pt_img[1])+25)
 
+		#define text
+		if attributes:
+			text = [str(obj.pt),\
+					'area: '+str(obj.area),\
+					'deform: '+str(round(obj.deform,2)),\
+					'circle: '+str(round(obj.circle,1)),\
+					'oblong: '+str(round(obj.oblong,2)),\
+					'perimeter: '+str(toInt(obj.perimeter)),\
+					'red: '+str(toInt(obj.red)),\
+					'blue: '+str(toInt(obj.blue)),\
+					'green:'+str(toInt(obj.green)),\
+					'RperB: '+str(round(obj.red_per_blue,2))]
+		else:
+			text = [str(obj.pt)]
+		if obj.name is not None:
+			text = [obj.name]+ text
 		#write text
-		cv2.putText(img,str(obj.pt),pt_text,cv2.FONT_HERSHEY_SIMPLEX,0.7, (255,0,0),thickness/2 )
+		for line in text:
+			pt_text = (pt_text[0],pt_text[1]+20)
+			cv2.putText(img,line,pt_text,cv2.FONT_HERSHEY_SIMPLEX,0.7, (0,0,0),thickness/2 )
 
 	return img
-

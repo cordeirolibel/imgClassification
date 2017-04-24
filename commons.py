@@ -17,13 +17,23 @@ AREA_MIN = SIDE*SIDE*0.009
 AREA_MAX = SIDE*SIDE*0.030
 
 class Object(object):
-	cnt = None #conturs
-	pt = None  #Point in Cartesian plane
-	pt_img = None #Point in pixel
-	area = None #area
-	img = None #minimal image of object
+	cnt = None 	#contours
+	pt = None  	#Point in Cartesian plane (mass center)
+	pt_img = None #Point in pixel (mass center)
+	img = None 	#minimal image of object
 	rect = None #best rectangle of image in Point and angles
+	name = None #name of the object (sphere,cube, L, plus,...)
 
+	#   For the DEEP LEARNING
+	area = None 	#area
+	deform = None 	#distance of mass center and rectangle center
+	circle = None 	#square sum of the distance of contours and mean of contours
+	oblong = None 	#Reason between the large and small size
+	perimeter = None #contour perimeter
+	red = None 		#Intensity of red
+	blue = None 	#Intensity of blue
+	green = None 	#Intensity of green
+	red_per_blue = None #Red per Blue
 
 	def __init__(self, cnt, area = None):
 		self.cnt = cnt
@@ -32,13 +42,15 @@ class Object(object):
 	#find the center of mass 
 	#shape is the image.shape where be all objects
 	def moments(self,shape):
+
 		mu = cv2.moments(self.cnt)
 		#calculate the center of mass and rint to int
-		self.pt_img = (toInt(mu["m10"]/mu["m00"]),toInt(mu["m01"]/mu["m00"]))
+		self.pt_img = (mu["m10"]/mu["m00"],mu["m01"]/mu["m00"])
 
 		#Converting to cartesian plane
 		self.pt= (valmap(self.pt_img[0],0,shape[1],0,SIDE),
 				 valmap(self.pt_img[1],0,shape[0],SIDE,0))
+
 
 	#find and save the minimal image of self in img
 	def imageSave(self, img):
@@ -58,7 +70,6 @@ def resize(img, max_size = SIZE_IMG):
 
 
 # display the image on screen and wait for a keypress
-
 def show(img, name = 'fig'):	
 	_,img = resize(img)#the max size is SIZE_IMG
 	cv2.imshow(name, img)
@@ -124,6 +135,13 @@ def valmap(value, in_min, in_max, out_min, out_max, is_int = True):
   		return np.rint(out_min + (out_max - out_min) * (1.0*(value - in_min) / (in_max - in_min))).astype(int)
   	return out_min + (out_max - out_min) * (1.0*(value - in_min) / (in_max - in_min))
 
-#converting var to int - accepts vectors
+#converting var to int - accepts vectors and tuple
 def toInt(val):
-	return np.rint(val).astype(int)
+	#for tuple, rint each item
+	if type(val) is tuple:
+		out = ()
+		for item in val:
+			out += (np.rint(item).astype(int),)
+		return out
+	else:
+		return np.rint(val).astype(int)
