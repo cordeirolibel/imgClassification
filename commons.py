@@ -25,7 +25,7 @@ class Object(object):
 	name = None #name of the object (sphere,cube, L, plus,...)
 
 	#   For the DEEP LEARNING
-	area = None 	#area
+	area = None 	#area 
 	deform = None 	#distance of mass center and rectangle center
 	circle = None 	#square sum of the distance of contours and mean of contours
 	oblong = None 	#Reason between the large and small size
@@ -34,11 +34,12 @@ class Object(object):
 	blue = None 	#Intensity of blue
 	green = None 	#Intensity of green
 	red_per_blue = None #Red per Blue
+	in_per_out = None #Area per white area (out of object, but in the rectangle rect)
 
 	def __init__(self, cnt, area = None):
 		self.cnt = cnt
 		self.area = area
-
+	
 	#find the center of mass 
 	#shape is the image.shape where be all objects
 	def moments(self,shape):

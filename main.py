@@ -47,6 +47,7 @@ attributes(image,objs_yes)
 k=0
 for obj in objs_yes:
 	k +=1
+
 	#show(obj.img,"f"+str(k))
 
 #Draw the contours and the center of mass

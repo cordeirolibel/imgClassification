@@ -70,6 +70,7 @@ k=1
 while True:
 	#open all images with name
 	image = cv2.imread('imgs/objs'+str(k)+'.jpg')
+
 	if image is None:
 		break
 
@@ -86,9 +87,11 @@ while True:
 		obj.moments(image.shape)
 
 		#wait for visual classification
-		show(obj.img,"image")
+		show(obj.img,'image')
+
+		cv2.waitKey(100)
 		root.mainloop()
-		cv2.destroyWindow("image")
+		cv2.destroyWindow('image')
 
 		if obj_name is 'end':#escape
 			break
@@ -97,14 +100,17 @@ while True:
 		obj.name = obj_name
 
 		#save obj in file
-		name = 'imgs/dados/'+str(k)+'-'+str(i)
-		pickle.dump( obj, open(name+'.p', "wb" ) )
+		name = 'imgs/data/'+str(k)+'-'+str(i)
+		pickle.dump( obj, open(name+'.p', 'wb' ) )
 		i +=1
 
-		print("objs"+str(k)+'-'+str(i)+'  '+obj_name)
+		print('objs'+str(k)+'-'+str(i)+'  '+obj_name)
 	k+=1
 
 	if obj_name is 'end':#escape
 		break
 
-print("End =)")
+print('End =)')
+cv2.waitKey(0)
+
+cv2.destroyAllWindows()

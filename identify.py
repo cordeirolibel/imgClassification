@@ -29,7 +29,7 @@ def identifyObjects(img, draw = True, inv = False):
 	#remove shawdow, because it is not an object
 	img = shadowRemove(img)
 
-	#show(img,"sem sombra")
+	show(img,"sem sombra")
 	image_b = binaryImg(img, inv = inv)
 
 	#Erosion and Dilate for connect the near objects
@@ -54,6 +54,10 @@ def attributes(img,objs):
 
 			#Find the center of mass of each object
 			obj.moments(img.shape)
+
+		#Area
+		if obj.area is None:
+			obj.area = cv2.contourArea(obj.cnt)
 
 		#Distance of mass center and rectangle center
 		box = cv2.boxPoints(obj.rect)
@@ -83,6 +87,13 @@ def attributes(img,objs):
 		obj.red = mean_colors[2]
 		obj.red_per_blue = obj.red/obj.blue
 
+		#
+		box = (cv2.boxPoints(obj.rect))
+		obj.in_per_out = obj.area/(cv2.contourArea(box) - obj.area)
+		
+		
+
+
 #remove the simple shadow (not all shadow)
 def shadowRemove(img):
 	imgHSV = cv2.cvtColor(img,cv2.COLOR_BGR2HSV)
@@ -101,7 +112,7 @@ def shadowRemove(img):
 	return img
 
 #Draw the contours and the center of mass
-def drawCnts(img,objs_yes,objs_not, thickness = 3, attributes = False):
+def drawCnts(img,objs_yes,objs_not, thickness = 4, attributes = False):
 
 	img = img.copy()
 
@@ -138,17 +149,15 @@ def drawCnts(img,objs_yes,objs_not, thickness = 3, attributes = False):
 					'circle: '+str(round(obj.circle,1)),\
 					'oblong: '+str(round(obj.oblong,2)),\
 					'perimeter: '+str(toInt(obj.perimeter)),\
-					'red: '+str(toInt(obj.red)),\
-					'blue: '+str(toInt(obj.blue)),\
-					'green:'+str(toInt(obj.green)),\
-					'RperB: '+str(round(obj.red_per_blue,2))]
+					'RperB: '+str(round(obj.red_per_blue,2)),\
+					'InPerOut: '+str(round(obj.in_per_out,2))]
 		else:
 			text = [str(obj.pt)]
 		if obj.name is not None:
 			text = [obj.name]+ text
 		#write text
 		for line in text:
-			pt_text = (pt_text[0],pt_text[1]+20)
-			cv2.putText(img,line,pt_text,cv2.FONT_HERSHEY_SIMPLEX,0.7, (0,0,0),thickness/2 )
+			pt_text = (pt_text[0],pt_text[1]+thickness*5)
+			cv2.putText(img,line,pt_text,cv2.FONT_HERSHEY_SIMPLEX,thickness/5.0, (0,0,0),thickness/2 )
 
 	return img
