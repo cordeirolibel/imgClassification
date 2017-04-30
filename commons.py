@@ -111,10 +111,13 @@ def cropMinRect(img, rect):
 
 	#===rotate bounding box
 	rect0 = (rect[0], rect[1], 0.0)
-	box = cv2.boxPoints(rect)
+	if cv2.__version__[0] is '3':
+		box = cv2.boxPoints(rect)
+	else: #version 2.x.x
+		box = cv2.cv.BoxPoints(rect)
+
 	for pt in box: #resize box
-		pt[0] +=cols_add
-		pt[1] +=rows_add
+		pt = (pt[0]+cols_add,pt[1]+rows_add)
 	pts = np.int0(cv2.transform(np.array([box]), M))[0]	
 	pts[pts < 0] = 0
 

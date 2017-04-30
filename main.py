@@ -30,13 +30,13 @@ from identify import *
 #=============================================
 #======CAPTURE IMAGE FROM FILE
 #=============================================
-image = cv2.imread('imgs/objs1.jpg')
+image = cv2.imread('imgs/objs3.jpg')
 inv = False
 #=============================================
 
-show(image, 'Original')
+#show(image, 'Original')
 image = cutBorder(image, inv = inv)
-show(image, 'Without Border')
+#show(image, 'Without Border')
 
 #Contours - identify Objects
 objs_yes,objs_not = identifyObjects(image)

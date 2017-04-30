@@ -88,7 +88,7 @@ while True:
 
 		#wait for visual classification
 		show(obj.img,'image')
-
+		cv2.moveWindow('image', 500,20);
 		cv2.waitKey(100)
 		root.mainloop()
 		cv2.destroyWindow('image')
@@ -111,6 +111,5 @@ while True:
 		break
 
 print('End =)')
-cv2.waitKey(0)
 
 cv2.destroyAllWindows()

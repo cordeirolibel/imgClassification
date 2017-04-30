@@ -72,7 +72,11 @@ def cutBorder(img, fix_size = True, size = SIDE, inv = False):
 
 	# ==> Step 3: Contour
 	# Find all external contours
-	_,contours,_ = cv2.findContours(binary_img,cv2.RETR_EXTERNAL,cv2.CHAIN_APPROX_SIMPLE )
+	if cv2.__version__[0] is '3':
+		_,contours,_ = cv2.findContours(binary_img,cv2.RETR_EXTERNAL,cv2.CHAIN_APPROX_SIMPLE )
+	else: #version 2.x.x
+		contours,_ = cv2.findContours(binary_img,cv2.RETR_EXTERNAL,cv2.CHAIN_APPROX_SIMPLE )
+	
 
 	# Find the largest contour
 	cnt = largestCnt(contours)[:,0,:]

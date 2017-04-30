@@ -29,7 +29,7 @@ def identifyObjects(img, draw = True, inv = False):
 	#remove shawdow, because it is not an object
 	img = shadowRemove(img)
 
-	show(img,"sem sombra")
+	#show(img,"sem sombra")
 	image_b = binaryImg(img, inv = inv)
 
 	#Erosion and Dilate for connect the near objects
@@ -39,7 +39,10 @@ def identifyObjects(img, draw = True, inv = False):
 	image_b = cv2.dilate(image_b,kernel,iterations = 1)
 
 	#find all the contours
-	_,contours,_ = cv2.findContours(image_b,cv2.RETR_LIST ,cv2.CHAIN_APPROX_SIMPLE )
+	if cv2.__version__[0] is '3':
+		_,contours,_ = cv2.findContours(image_b,cv2.RETR_LIST ,cv2.CHAIN_APPROX_SIMPLE )
+	else:#version 2.x.x
+		contours,_ = cv2.findContours(image_b,cv2.RETR_LIST ,cv2.CHAIN_APPROX_SIMPLE )
 	objs_yes,objs_not = categoryCnts(image_b,contours)
 
 	return objs_yes,objs_not
@@ -60,7 +63,11 @@ def attributes(img,objs):
 			obj.area = cv2.contourArea(obj.cnt)
 
 		#Distance of mass center and rectangle center
-		box = cv2.boxPoints(obj.rect)
+		if cv2.__version__[0] is '3':
+			box = cv2.boxPoints(obj.rect)
+		else:#version 2.x.x
+			box = cv2.cv.BoxPoints(obj.rect)
+
 		center_pt = [np.mean(box[:,0]),np.mean(box[:,1])]
 		obj.deform = np.sqrt((center_pt[0]-obj.pt_img[0])**2+(center_pt[1]-obj.pt_img[1])**2)
 
@@ -87,8 +94,7 @@ def attributes(img,objs):
 		obj.red = mean_colors[2]
 		obj.red_per_blue = obj.red/obj.blue
 
-		#
-		box = (cv2.boxPoints(obj.rect))
+		#Area per white area (out of object, but in the rectangle rect)
 		obj.in_per_out = obj.area/(cv2.contourArea(box) - obj.area)
 		
 		
@@ -103,7 +109,7 @@ def shadowRemove(img):
 
 	#removing noise of mask
 	kernel = cv2.getStructuringElement(cv2.MORPH_RECT,(4,4))
-	mask = cv2.morphologyEx(mask, cv2.MORPH_HITMISS, kernel)
+	mask = cv2.morphologyEx(mask, cv2.MORPH_OPEN, kernel)#or cv2.MORPH_HITMISS
 
 	#Join mask with the img
 	img = img.copy()
@@ -130,9 +136,12 @@ def drawCnts(img,objs_yes,objs_not, thickness = 4, attributes = False):
 
 	#Draw a rectangle of each obj
 	for obj in objs_yes:
-		box = cv2.boxPoints(obj.rect)
+		if cv2.__version__[0] is '3':
+			box = cv2.boxPoints(obj.rect)
+		else: #version 2.x.x
+			box = cv2.cv.BoxPoints(obj.rect)
 		box = toInt(box)
-		img = cv2.drawContours(img,[box],-1,(255,50,255),thickness)
+		cv2.drawContours(img,[box],-1,(255,50,255),thickness)
 
 	#Draw the center of mass of each object in blue
 	for obj in objs_yes:
