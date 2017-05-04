@@ -13,14 +13,14 @@ from commons import *
 PWM_MIN = 600
 PWM_MAX = 2400
 SPEED = 40/0.1 # 60degree/0.1s (datasheet)
-TIME_MIN = SPEED*20#Never gives a time less than 20 degrees
+TIME_MIN = 20/SPEED#Never gives a time less than 20 degrees
 
 
 #===================================================
 #=============Init Servos GPIO 
 #===================================================
-pigpio = None
 try: #running only in raspberry
+    global pigpio
     pigpio = pigpio.pi()
     if not pigpio.connected:
         print("try >> sudo pigpiod")
@@ -54,12 +54,17 @@ class Servo(object):
 
         self.angle = ang
         
+        
     def stop(self):
         pigpio.set_servo_pulsewidth(self.pin, 0) 
 
-    #wait the servo move (time defined in serAngle)
-    def wait():
-        time.sleep(wait_time)
+    #wait the servo move (time defined in setAngle)
+    def wait(self):
+        if self.wait_time > TIME_MIN:
+            time.sleep(self.wait_time)
+        else:
+            time.sleep(TIME_MIN)
+            wait_time = 0
 
 
 #===================================================
@@ -85,41 +90,60 @@ class Servo(object):
 
 BETA = 0.4 # convergence speed ]0,1] NEVER ZERO
 SPEED_MED = SPEED/2 #this speed define time T
-def smooth(servos,angles):
+SLEEP = 0.005 #0.001 - max accuracy, 0.005 - Recomanded
 
+def smooth(servos,angles):
+            
     #find the biggest time of all movement servos and save all angles
-    max_time = 0
+    max_time = TIME_MIN
     init_ang = []
     for servo,ang in zip(servos,angles):
+        #find the biggest time of all movement servos
         _time = abs(ang-servo.angle)/(SPEED_MED)
         if _time > max_time:
             max_time = _time
-
+        
+        #save angles
+        if ang<-90 or 90<ang:
+            print("Out of servo range: "+str(ang)+" degrees")
+            return
         init_ang.append(servo.angle)
 
     #converting to milliseconds
-    max_time *= 1000 
-    print(max_time)
+    max_time = toInt(max_time/SLEEP) #(1000*max_time)/(SLEEP*1000) accuracy
+
     #movement
-    for dtime in range(toInt(max_time)):
+    for dtime in range(max_time):
         for servo,ang1,ang2 in zip(servos,init_ang,angles):
             #See above graph 
-            angle = (ang1-ang2)*(2**(-dtime/max_time+1)-1)**(1/BETA)+ang2
+            angle = (ang1-ang2)*(2**(-1.0*dtime/max_time+1)-1)**(1/BETA)+ang2
             servo.setAngle(angle)
-        time.sleep(0.001)
+        time.sleep(SLEEP)
+        
+    #stop all servos
+    for servo in servos:
+        servo.stop()
 
 #===================================================
 #=============Main
 #===================================================
-
-servos = []
-servos.append(Servo(26))
-#servos.append(Servo(25))
-#servos.append(Servo(24))
-#servos.append(Servo(23))
-#smooth(servos,[4,2,5,2])
-servos[0].angle = -40
-
+try:
+    servos = []
+    servos.append(Servo(26))
+    servos[0].setAngle(0)
+    #servos.append(Servo(25))
+    #servos.append(Servo(24))
+    #servos.append(Servo(23))
+    while(True):
+        ang = raw_input(">>")
+        smooth(servos,[int(ang)])
+        ang = raw_input("2>>")
+        servos[0].setAngle(int(ang))
+        servos[0].wait()
+        servos[0].stop()
+        print('\n')
+except:
+    None
 
 
 

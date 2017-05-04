@@ -39,7 +39,7 @@ class Object(object):
 	blue = None 	#Intensity of blue
 	green = None 	#Intensity of green
 	red_per_blue = None #Red per Blue
-	in_per_out = None #Area per white area (out of object, but in the rectangle rect)
+	out_per_in = None #White area per Area (White area: out of object, but in the rectangle rect)
 
 	def __init__(self, cnt, area = None):
 		self.cnt = cnt

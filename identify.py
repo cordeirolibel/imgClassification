@@ -95,15 +95,16 @@ def attributes(img,objs):
 		obj.red = mean_colors[2]
 		obj.red_per_blue = obj.red/obj.blue
 
-		#Area per white area (out of object, but in the rectangle rect)
-		obj.in_per_out = obj.area/(cv2.contourArea(box) - obj.area)
+		#White area per Area (White area: out of object, but in the rectangle rect)
+		obj.out_per_in = (cv2.contourArea(box) - obj.area)/obj.area
 
 #remove the simple shadow (not all shadow)
 def shadowRemove(img):
 	imgHSV = cv2.cvtColor(img,cv2.COLOR_BGR2HSV)
 
 	#colors filter between color 1 and color2
-	mask = cv2.inRange(imgHSV,  np.array([0,0,0]),  np.array([255,130,179]))
+	#mask = cv2.inRange(imgHSV,  np.array([0,0,0]),  np.array([255,130,179]))#in pc
+	mask = cv2.inRange(imgHSV,  np.array([0,0,100]),  np.array([255,100,179]))#in raspberry 
 
 	#removing noise of mask
 	kernel = cv2.getStructuringElement(cv2.MORPH_RECT,(4,4))
@@ -158,7 +159,7 @@ def drawCnts(img,objs_yes,objs_not, thickness = 4, attributes = False):
 					'oblong: '+str(round(obj.oblong,2)),\
 					'perimeter: '+str(toInt(obj.perimeter)),\
 					'RperB: '+str(round(obj.red_per_blue,2)),\
-					'InPerOut: '+str(round(obj.in_per_out,2))]
+					'OutPerIn: '+str(round(obj.out_per_in,2))]
 		else:
 			text = [str(obj.pt)]
 		if obj.name is not None:
