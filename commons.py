@@ -2,16 +2,21 @@
 #		Cordeiro Libel - UTFPR - April of 2016		    #
 #-------------------------------------------------------#
 
-#from picamera.array import PiRGBArray
-#from picamera import PiCamera
 import time
 import cv2
 import numpy as np
 
+try: #running only in raspberry
+	import pigpio # for pwm servos
+	from picamera.array import PiRGBArray
+	from picamera import PiCamera
+except:
+	None
+
 #==============
 #====DEFINES
 #==============
-SIZE_IMG = 700 #default size image
+SIZE_IMG = 500 #default size image
 SIDE = 1000 #for the cartesian plan
 AREA_MIN = SIDE*SIDE*0.009
 AREA_MAX = SIDE*SIDE*0.030
@@ -58,6 +63,7 @@ class Object(object):
 		self.rect = cv2.minAreaRect(self.cnt)
 		self.img = cropMinRect(img,self.rect)
 
+
 # Resize to the max size to be max_size
 def resize(img, max_size = SIZE_IMG):
 	# Make a consistent size
@@ -91,6 +97,8 @@ def binaryImg(img, scale = 0.5, inv = False):
 # return a image in rectangle
 def cropMinRect(img, rect):
 
+	tic()
+
 	#===expand img
 	angle = rect[2]
 	rows,cols = img.shape[0], img.shape[1]
@@ -103,10 +111,10 @@ def cropMinRect(img, rect):
 	rows_add = toInt((rows_new-rows)/2)
 	#create a Border, for don't crop in rotation
 	img = cv2.copyMakeBorder(img,rows_add,rows_add,cols_add,cols_add,cv2.BORDER_CONSTANT,value=(255,255,255))
-
+	
 	# rotate img
 	M = cv2.getRotationMatrix2D((toInt(cols_new/2),toInt(rows_new/2)),angle,1.0)
-	img_rot = cv2.warpAffine(img,M,(cols_new,rows_new))
+	img_rot = cv2.warpAffine(img,M,(cols_new,rows_new)) ######<<==================FUNCAO LENTA
 	#show(img_rot)
 
 	#===rotate bounding box
@@ -115,9 +123,12 @@ def cropMinRect(img, rect):
 		box = cv2.boxPoints(rect)
 	else: #version 2.x.x
 		box = cv2.cv.BoxPoints(rect)
+		box = np.array(box)
 
 	for pt in box: #resize box
-		pt = (pt[0]+cols_add,pt[1]+rows_add)
+		pt[0] +=cols_add
+		pt[1] +=rows_add
+
 	pts = np.int0(cv2.transform(np.array([box]), M))[0]	
 	pts[pts < 0] = 0
 
@@ -149,3 +160,15 @@ def toInt(val):
 		return out
 	else:
 		return np.rint(val).astype(int)
+
+
+last_time  = time.time()
+#function of time, milliseconds of last tic() 
+#reset difine if you want clear the clock for ne next tic()
+def tic(reset = True):
+	global last_time
+	toc = time.time()
+	delta = toc - last_time
+	if reset:
+		last_time = toc
+	return delta*1000

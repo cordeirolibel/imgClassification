@@ -1,5 +1,5 @@
 #>>>>>>>>		   Identify Objects		  	  <<<<<<<<<<#
-#		Cordeiro Libel - UTFPR - April of 2016		    #
+#		Cordeiro Libel - UTFPR - April of 2017		    #
 #-------------------------------------------------------#
 
 #My libraries
@@ -49,15 +49,15 @@ def identifyObjects(img, draw = True, inv = False):
 
 #Calculate attributes for the Deep Learning
 def attributes(img,objs):
-	
+
 	for obj in objs:
 		if img is not None:
+
 			#Save the minimal image of each object
 			obj.imageSave(img)
 
 			#Find the center of mass of each object
 			obj.moments(img.shape)
-
 		#Area
 		if obj.area is None:
 			obj.area = cv2.contourArea(obj.cnt)
@@ -96,7 +96,7 @@ def attributes(img,objs):
 
 		#Area per white area (out of object, but in the rectangle rect)
 		obj.in_per_out = obj.area/(cv2.contourArea(box) - obj.area)
-		
+
 		
 
 

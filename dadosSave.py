@@ -88,8 +88,8 @@ while True:
 
 		#wait for visual classification
 		show(obj.img,'image')
-		cv2.moveWindow('image', 500,20);
-		cv2.waitKey(100)
+		cv2.moveWindow('image', 300,20);
+		cv2.waitKey(1000)
 		root.mainloop()
 		cv2.destroyWindow('image')
 
