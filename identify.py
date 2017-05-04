@@ -67,7 +67,8 @@ def attributes(img,objs):
 			box = cv2.boxPoints(obj.rect)
 		else:#version 2.x.x
 			box = cv2.cv.BoxPoints(obj.rect)
-
+			box = np.array(box, dtype=np.float32)
+		
 		center_pt = [np.mean(box[:,0]),np.mean(box[:,1])]
 		obj.deform = np.sqrt((center_pt[0]-obj.pt_img[0])**2+(center_pt[1]-obj.pt_img[1])**2)
 
@@ -96,9 +97,6 @@ def attributes(img,objs):
 
 		#Area per white area (out of object, but in the rectangle rect)
 		obj.in_per_out = obj.area/(cv2.contourArea(box) - obj.area)
-
-		
-
 
 #remove the simple shadow (not all shadow)
 def shadowRemove(img):
@@ -140,6 +138,7 @@ def drawCnts(img,objs_yes,objs_not, thickness = 4, attributes = False):
 			box = cv2.boxPoints(obj.rect)
 		else: #version 2.x.x
 			box = cv2.cv.BoxPoints(obj.rect)
+			box = np.array(box)
 		box = toInt(box)
 		cv2.drawContours(img,[box],-1,(255,50,255),thickness)
 

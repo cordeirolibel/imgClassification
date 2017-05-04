@@ -161,7 +161,6 @@ def toInt(val):
 	else:
 		return np.rint(val).astype(int)
 
-
 last_time  = time.time()
 #function of time, milliseconds of last tic() 
 #reset difine if you want clear the clock for ne next tic()
@@ -172,3 +171,4 @@ def tic(reset = True):
 	if reset:
 		last_time = toc
 	return delta*1000
+
