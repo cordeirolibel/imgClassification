@@ -103,8 +103,8 @@ def shadowRemove(img):
 	imgHSV = cv2.cvtColor(img,cv2.COLOR_BGR2HSV)
 
 	#colors filter between color 1 and color2
-	#mask = cv2.inRange(imgHSV,  np.array([0,0,0]),  np.array([255,130,179]))#in pc
-	mask = cv2.inRange(imgHSV,  np.array([0,0,100]),  np.array([255,100,179]))#in raspberry 
+	mask = cv2.inRange(imgHSV,  np.array([0,0,0]),  np.array([255,130,179]))#in pc
+	#mask = cv2.inRange(imgHSV,  np.array([0,0,100]),  np.array([255,100,179]))#in raspberry 
 
 	#removing noise of mask
 	kernel = cv2.getStructuringElement(cv2.MORPH_RECT,(4,4))

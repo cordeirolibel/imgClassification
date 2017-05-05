@@ -9,6 +9,7 @@ from identify import *
 
 import cPickle as pickle
 
+TESTES = 20 # 20% of data for the final test
 #=============================================
 #======SAVE IMAGE OF EACH OBJECT
 #=============================================
@@ -30,13 +31,18 @@ while True:
 		n2 +=1
 		continue
 
+	show(objs[-1].img,str(n2)+'-'+str(n1)+'-'+objs[-1].name)
 
-	print("objs "+str(n2)+'-'+str(n1))
 	n1+=1
 
 #Calculate attributes for the Deep Learning
 attributes(None,objs)
 
 	
+
+cv2.waitKey(0)
+
+cv2.destroyAllWindows()
+
 
 print("End =)")

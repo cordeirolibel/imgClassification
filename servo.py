@@ -127,23 +127,7 @@ def smooth(servos,angles):
 #===================================================
 #=============Main
 #===================================================
-try:
-    servos = []
-    servos.append(Servo(26))
-    servos[0].setAngle(0)
-    #servos.append(Servo(25))
-    #servos.append(Servo(24))
-    #servos.append(Servo(23))
-    while(True):
-        ang = raw_input(">>")
-        smooth(servos,[int(ang)])
-        ang = raw_input("2>>")
-        servos[0].setAngle(int(ang))
-        servos[0].wait()
-        servos[0].stop()
-        print('\n')
-except:
-    None
+
 
 
 

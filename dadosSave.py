@@ -91,7 +91,7 @@ while True:
 		cv2.moveWindow('image', 300,20);
 		cv2.waitKey(1000)
 		root.mainloop()
-		cv2.destroyWindow('image')
+		#cv2.destroyWindow('image')
 
 		if obj_name is 'end':#escape
 			break

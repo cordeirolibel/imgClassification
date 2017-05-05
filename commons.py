@@ -18,7 +18,7 @@ except:
 #==============
 SIZE_IMG = 500 #default size image
 SIDE = 1000 #for the cartesian plan
-AREA_MIN = SIDE*SIDE*0.009
+AREA_MIN = SIDE*SIDE*0.008
 AREA_MAX = SIDE*SIDE*0.030
 
 class Object(object):
@@ -28,6 +28,7 @@ class Object(object):
 	img = None 	#minimal image of object
 	rect = None #best rectangle of image in Point and angles
 	name = None #name of the object (sphere,cube, L, plus,...)
+	#red cube,red sphere,red L,red plus,blue cube,blue sphere,blue L,blue plus
 
 	#   For the DEEP LEARNING
 	area = None 	#area 
