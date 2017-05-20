@@ -15,7 +15,7 @@ rawCapture = None
 try: #running only in raspberry
     # initialize the camera and grab a reference to the raw camera capture
     camera = PiCamera()
-    #camera.resolution=(3280,2464)
+    camera.resolution=(3280,2464)
     rawCapture = PiRGBArray(camera)
     # allow the camera to warm up, in seconds
     time.sleep(0.1)

@@ -18,8 +18,8 @@ except:
 #==============
 SIZE_IMG = 500 #default size image
 SIDE = 1000 #for the cartesian plan
-AREA_MIN = SIDE*SIDE*0.008
-AREA_MAX = SIDE*SIDE*0.030
+AREA_MIN = SIDE*SIDE*0.005
+AREA_MAX = SIDE*SIDE*0.020
 
 class Object(object):
 	cnt = None 	#contours
@@ -78,8 +78,8 @@ def resize(img, max_size = SIZE_IMG):
 
 
 # display the image on screen and wait for a keypress
-def show(img, name = 'fig'):	
-	_,img = resize(img)#the max size is SIZE_IMG
+def show(img, name = 'fig', size = SIZE_IMG):	
+	_,img = resize(img,max_size = size)#the max size is SIZE_IMG
 	cv2.imshow(name, img)
 
 
@@ -97,8 +97,6 @@ def binaryImg(img, scale = 0.5, inv = False):
 # send a img and a rect (rectangle rotated)
 # return a image in rectangle
 def cropMinRect(img, rect):
-
-	tic()
 
 	#===expand img
 	angle = rect[2]

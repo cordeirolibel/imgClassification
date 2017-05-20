@@ -26,6 +26,7 @@ def categoryCnts(img,contours):
 
 #Identify all objets and save the contours
 def identifyObjects(img, draw = True, inv = False):
+
 	#remove shawdow, because it is not an object
 	img = shadowRemove(img)
 
@@ -51,13 +52,17 @@ def identifyObjects(img, draw = True, inv = False):
 def attributes(img,objs):
 
 	for obj in objs:
-		if img is not None:
+		#if img is not None:
 
-			#Save the minimal image of each object
-			obj.imageSave(img)
+		#best rectangle of image in Point and angles
+		obj.rect = cv2.minAreaRect(obj.cnt)
 
-			#Find the center of mass of each object
-			obj.moments(img.shape)
+		#Save the minimal image of each object
+		obj.imageSave(img)
+
+		#Find the center of mass of each object
+		obj.moments(img.shape)
+
 		#Area
 		if obj.area is None:
 			obj.area = cv2.contourArea(obj.cnt)
@@ -83,23 +88,25 @@ def attributes(img,objs):
 		obj.circle = obj.circle/len(dists)
 		
 		#Reason between the large and small size
-		obj.oblong = 1.0*obj.img.shape[1]/obj.img.shape[0]
+		obj.oblong = 1.0*obj.rect[1][1]/obj.rect[1][0]
 
 		#Contour perimeter
 		obj.perimeter = cv2.arcLength(obj.cnt,True)
 
 		#Intensity of colors <=====================Ver melhor isso ak, ele tira a media junto com a borda que eh sempre branca(todas as cores)
-		mean_colors = cv2.mean(obj.img)
-		obj.blue = mean_colors[0]
-		obj.green = mean_colors[1]
-		obj.red = mean_colors[2]
-		obj.red_per_blue = obj.red/obj.blue
+		#mean_colors = cv2.mean(obj.img)
+		#obj.blue = mean_colors[0]
+		#obj.green = mean_colors[1]
+		#obj.red = mean_colors[2]
+		#obj.red_per_blue = obj.red/obj.blue
+		obj.red_per_blue = 8000
 
 		#White area per Area (White area: out of object, but in the rectangle rect)
 		obj.out_per_in = (cv2.contourArea(box) - obj.area)/obj.area
 
 #remove the simple shadow (not all shadow)
 def shadowRemove(img):
+
 	imgHSV = cv2.cvtColor(img,cv2.COLOR_BGR2HSV)
 
 	#colors filter between color 1 and color2

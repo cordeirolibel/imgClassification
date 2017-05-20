@@ -13,40 +13,46 @@ from camera import *
 #======MAIN
 #=============================================
 
-#=====Camera init
-
- 
 inv = False
-#video()
-image = capture(False)
-
-show(image, 'Original')
-
-
-image = cutBorder(image, inv = inv)
-show(image, 'Without Border')
-
-#Contours - identify Objects
-objs_yes,objs_not = identifyObjects(image)
-
-#Calculate attributes for the Deep Learning
-attributes(image,objs_yes)
 
 k=0
-for obj in objs_yes:
-    k +=1
+camera.resolution = (1296, 972)
+for frame in camera.capture_continuous(rawCapture, format="bgr", use_video_port=True):
+	print('frame: '+str(k))
+	k+=1
 
-    #show(obj.img,"f"+str(k))
+	image = frame.array
+	
+	show(image,"Original", size = 300)
+	cv2.waitKey(10)
 
-#Draw the contours and the center of mass
-image = drawCnts(image,objs_yes,objs_not, attributes = True)
+	image = cutBorder(image, inv = inv)
+	#show(image, 'Without Border')
 
+	#Contours - identify Objects
+	objs_yes,objs_not = identifyObjects(image)
 
-show(image,"Contornos")
+	#Calculate attributes for the Deep Learning
+	attributes(image,objs_yes)
 
-#save image
-#cv2.imwrite('imgs/saida.jpg',image)
+	#Draw the contours and the center of mass
+	image = drawCnts(image,objs_yes,objs_not, attributes = True)
 
-cv2.waitKey(0)
+	show(image,"Final")
+	#cv2.imshow("Video", image)
+	key = cv2.waitKey(10) & 0xFF
+	
+    # clear the stream in preparation for the next frame
+	rawCapture.truncate(0)
+	
+    # if the `q` key was pressed, break from the loop
+	if key == ord("q"):
+		break
+		
+	#save image
+	#cv2.imwrite('imgs/teste.jpg',image)
+	#break
+
+#cv2.waitKey(0)
 
 cv2.destroyAllWindows()

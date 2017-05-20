@@ -17,99 +17,90 @@ def largestCnt(contours):
 			largest_cnt = cnt
 	return largest_cnt
 
-#simplify in 4 points
+#   Simplify points in 4 points  O(sqrt(n)) n:number of points
+#Calculate the best four points is expensive.
+#So we indenfy the best points in a samples of all points.
+#As soon, we look around this sample and find the best point.
+# . . . . . . . . . . . .
+# ^         ^         ^ 
+# |__jump___|__jump___|
 def findCorner(points,x_max,y_max):
-
-	length = {'NW':[],'SW':[],'SE':[],'NE':[],'Point':[]}
 	four_points = np.array([[0,0],[0,0],[0,0],[0,0]])
 
-	#save the distance^2 of each point to the vertices of the image
-	for pt in points: ######<<====================================FOR LENTO
-		length['NW'].append((pt[0]-  0  ) + (pt[1]-  0  )) 
-		length['NE'].append((x_max-pt[0]) + (pt[1]-  0  ))
-		length['SW'].append((pt[0]-  0  ) + (y_max-pt[1]))
-		length['SE'].append((x_max-pt[0]) + (y_max-pt[1]))
-		length['Point'].append(pt) 
+	size = points.size/2
 
-	#save point closer NW vertice
-	index = length['NW'].index(min(length['NW']))
-	four_points[0] = points[index]
-	#save point closer NW vertice
-	index = length['NE'].index(min(length['NE']))
-	four_points[1] = points[index]
-	#save point closer SW vertice
-	index = length['SW'].index(min(length['SW']))
-	four_points[2] = points[index]
-	#save point closer SE vertice
-	index = length['SE'].index(min(length['SE']))
-	four_points[3] = points[index]
+	#the cost function is C(samples) = samples+2*jump-1, for jump = (size-1)/samples
+	#the minimal of the cost is dC(samples)/dsamples = 1-2*(size-1)*samples^-2 = 0, so samples = 1+sqrt(2*(size-1))
+	#samples: number of samples for the aproximate the minimal and maximal element
+	samples = toInt(np.sqrt(2*(size-1)))
+	jump = 1.0*(size-1)/samples
 
-	#Mean of size in pixels
-	size_x = toInt((four_points[1][0] - four_points[0][0]+four_points[3][0]- four_points[2][0])/2)
-	size_y = toInt((four_points[2][1] - four_points[0][1]+four_points[3][1]- four_points[1][1])/2)
+	#====The first look (2 points)
+	amin = 1000000
+	amax = -1000000
+	for i in range(samples+1): 
+		index = toInt(i*jump)
+		val = points[index][0]+points[index][1]
+		if val<amin:
+			#save point closer NW vertice
+			n_min = index
+			amin = val
+		if val>amax:
+			#save point closer SE vertice
+			n_max = index
+			amax = val
+	four_points[0] = points[n_min]
+	four_points[3] = points[n_max]
 
-	return four_points
+	#====The Second look (2 points), around the n_min and n_max
+	for i in range(toInt(2*jump)-1):
+		index = (n_min - toInt(jump) + 1 + i)%size
+		val = points[index][0]+points[index][1]
+		if val<amin:
+			#save point closer NW vertice
+			four_points[0] = points[index]
+			amin = val
 
-#simplify in 4 points
-def findCorner(points,x_max,y_max):
+		index = (n_max - toInt(jump) + 1 + i)%size
+		val = points[index][0]+points[index][1]
+		if val>amax:
+			#save point closer SE vertice
+			four_points[3] = points[index]
+			amax = val
 
-	length = {'NW':[],'SW':[],'SE':[],'NE':[],'Point':[]}
-	four_points = np.array([[0,0],[0,0],[0,0],[0,0]])
+	#====The first look (more 2 points)
+	amin = 1000000
+	amax = -1000000
+	for i in range(samples+1): 
+		index = toInt(i*jump)
+		val = points[index][0]-points[index][1]
+		if val<amin:
+			#save point closer SW vertice
+			n_min = index
+			amin = val
+		if val>amax:
+			#save point closer NE vertice
+			n_max = index
+			amax = val
+	four_points[2] = points[n_min]
+	four_points[1] = points[n_max]
 
-	#save the distance^2 of each point to the vertices of the image
-	for pt in points: ######<<====================================FOR LENTO
-		length['NW'].append((pt[0]-  0  ) + (pt[1]-  0  )) 
-		length['NE'].append((x_max-pt[0]) + (pt[1]-  0  ))
-		length['SW'].append((pt[0]-  0  ) + (y_max-pt[1]))
-		length['SE'].append((x_max-pt[0]) + (y_max-pt[1]))
-		length['Point'].append(pt) 
+	#====The Second look (2 points), around the n_min and n_max
+	for i in range(toInt(2*jump)-1):
+		index = (n_min - toInt(jump) + 1 + i)%size
+		val = points[index][0]-points[index][1]
+		if val<amin:
+			#save point closer SW vertice
+			four_points[2] = points[index]
+			amin = val
 
-	#save point closer NW vertice
-	index = length['NW'].index(min(length['NW']))
-	four_points[0] = points[index]
-	#save point closer NW vertice
-	index = length['NE'].index(min(length['NE']))
-	four_points[1] = points[index]
-	#save point closer SW vertice
-	index = length['SW'].index(min(length['SW']))
-	four_points[2] = points[index]
-	#save point closer SE vertice
-	index = length['SE'].index(min(length['SE']))
-	four_points[3] = points[index]
+		index = (n_max - toInt(jump) + 1 + i)%size
+		val = points[index][0]-points[index][1]
+		if val>amax:
+			#save point closer NE vertice
+			four_points[1] = points[index]
+			amax = val
 
-	#Mean of size in pixels
-	size_x = toInt((four_points[1][0] - four_points[0][0]+four_points[3][0]- four_points[2][0])/2)
-	size_y = toInt((four_points[2][1] - four_points[0][1]+four_points[3][1]- four_points[1][1])/2)
-
-	return four_points
-
-#simplify in 4 points
-def findCorner2(points,x_max,y_max):
-	four_points = np.array([[0,0],[0,0],[0,0],[0,0]])
-	length_nw = []
-	length_ne = []
-	length_sw = []
-	length_se = []
-
-	#save the distance^2 of each point to the vertices of the image
-	for pt in points: ######<<====================================FOR LENTO
-		length_nw.append((pt[0]  ) + (pt[1] )) #NW
-		length_ne.append((x_max-pt[0]) + (pt[1] )) #NE
-		length_sw.append((pt[0] ) + (y_max-pt[1])) #SW
-		length_se.append((x_max-pt[0]) + (y_max-pt[1])) #SE
-
-	#save point closer NW vertice
-	index = length_nw.index(min(length_nw))
-	four_points[0] = points[index]
-	#save point closer NW vertice
-	index = length_ne.index(min(length_ne))
-	four_points[1] = points[index]
-	#save point closer SW vertice
-	index = length_sw.index(min(length_sw))
-	four_points[2] = points[index]
-	#save point closer SE vertice
-	index = length_se.index(min(length_se))
-	four_points[3] = points[index]
 	return four_points
 
 def cutBorder(img, fix_size = True, size = SIDE, inv = False):
@@ -141,7 +132,8 @@ def cutBorder(img, fix_size = True, size = SIDE, inv = False):
 	cnt = largestCnt(contours)[:,0,:]
 
 	#simplify in 4 points
-	four_points = findCorner2(cnt,small_img.shape[1],small_img.shape[0])
+	four_points = findCorner(cnt,small_img.shape[1],small_img.shape[0])
+
 	#uncomment to print contours
 	#cv2.drawContours(small_img,[four_points],-1,(255,0,0),5)
 	#show(small_img)

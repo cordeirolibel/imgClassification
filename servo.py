@@ -12,9 +12,12 @@ from commons import *
 #datasheet is [1000,2000], but in tests [600,2400]
 PWM_MIN = 600
 PWM_MAX = 2400
-SPEED = 40/0.1 # 60degree/0.1s (datasheet)
-TIME_MIN = 20/SPEED#Never gives a time less than 20 degrees
 
+SPEED = 40/0.1 # 60degree/0.1s (datasheet)
+TIME_MIN = 10/SPEED#Never gives a time less than 20 degrees
+
+ANG_OPEN = -35
+ANG_CLOSE = 60
 
 #===================================================
 #=============Init Servos GPIO 
@@ -41,7 +44,7 @@ class Servo(object):
     #go to ang
     def setAngle(self,ang):
         global pigpio
-        
+
         if ang<-90 or 90<ang:
             print("Out of servo range: "+str(ang)+" degrees")
             return
@@ -53,10 +56,17 @@ class Servo(object):
         self.wait_time = abs(self.angle - ang)/SPEED
 
         self.angle = ang
+    
+
+    def open(self):
+        smooth(self,ANG_OPEN)
         
+    def close(self):
+        smooth(self,ANG_CLOSE)
         
     def stop(self):
         pigpio.set_servo_pulsewidth(self.pin, 0) 
+        None
 
     #wait the servo move (time defined in setAngle)
     def wait(self):
@@ -92,14 +102,24 @@ BETA = 0.4 # convergence speed ]0,1] NEVER ZERO
 SPEED_MED = SPEED/2 #this speed define time T
 SLEEP = 0.005 #0.001 - max accuracy, 0.005 - Recomanded
 
-def smooth(servos,angles):
-            
+def smooth(servos,angles, wait = True):
+    
+    #if is only 1 servo
+    if not isinstance(angles, (list, tuple)):
+        angles = [angles]
+    if not isinstance(servos, (list, tuple)):
+        servos = [servos]
+
     #find the biggest time of all movement servos and save all angles
     max_time = TIME_MIN
     init_ang = []
+    times = []
     for servo,ang in zip(servos,angles):
+
         #find the biggest time of all movement servos
         _time = abs(ang-servo.angle)/(SPEED_MED)
+        times.append(toInt(_time/SLEEP))
+
         if _time > max_time:
             max_time = _time
         
@@ -113,12 +133,22 @@ def smooth(servos,angles):
     max_time = toInt(max_time/SLEEP) #(1000*max_time)/(SLEEP*1000) accuracy
 
     #movement
+    k = 0
     for dtime in range(max_time):
-        for servo,ang1,ang2 in zip(servos,init_ang,angles):
-            #See above graph 
-            angle = (ang1-ang2)*(2**(-1.0*dtime/max_time+1)-1)**(1/BETA)+ang2
+
+        k+=1
+        for servo,ang1,ang2, _time in zip(servos,init_ang,angles, times):
+            if dtime > _time:# servo movement finished
+                servo.stop()
+                continue
+            if _time == 0:
+                continue
+            else:
+                #See above graph 
+                angle = (ang1-ang2)*(2**(-1.0*dtime/_time+1)-1)**(1/BETA)+ang2
             servo.setAngle(angle)
-        time.sleep(SLEEP)
+        if wait:
+            time.sleep(SLEEP)
         
     #stop all servos
     for servo in servos:
@@ -126,7 +156,7 @@ def smooth(servos,angles):
 
 #===================================================
 #=============Main
-#===================================================
+#==================================================
 
 
 
