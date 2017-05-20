@@ -161,7 +161,7 @@ while(1):
 
     claw,angles = mouse()
     smooth(servos,angles)
-
+    #allMove(servos,angles)
     if claw:
         servo_hand.close()
     else:

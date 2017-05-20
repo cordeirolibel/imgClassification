@@ -2,6 +2,8 @@
 #        Cordeiro Libel - UTFPR - may of 2017           #
 #-------------------------------------------------------#
 
+#from sklearn import svm
+
 #identify all object by a number
 def name2num(name):
     return {
@@ -30,13 +32,15 @@ def train(objs):
         data.append(obj.circle)
         data.append(obj.oblong)
         data.append(obj.perimeter)
+        data.append(obj.edges)
         data.append(obj.red_per_blue)
         data.append(obj.out_per_in)
 
         trainData.append(data)
 
         trainLabels.append(name2num(obj.name))
-
+    print(trainData)
+    return
     # Set up SVM for OpenCV 3
     svm = cv2.ml.SVM_create()
     # Set SVM type
@@ -52,7 +56,8 @@ def train(objs):
     svm.train(trainData, cv2.ml.ROW_SAMPLE, trainLabels)
      
     # Save trained model 
-    svm->save("digits_svm_model.yml");
+    #svm->save("digits_svm_model.yml")
      
     # Test on a held out test set
     testResponse = svm.predict(testData)[1].ravel()
+

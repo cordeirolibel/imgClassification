@@ -6,7 +6,7 @@
 from commons import *
 #from border import *
 from identify import *
-
+from classify import *
 import cPickle as pickle
 
 TESTES = 20 # 20% of data for the final test
@@ -35,10 +35,10 @@ while True:
 
 	n1+=1
 
-#Calculate attributes for the Deep Learning
+#Calculate attributes for the Classification
 attributes(None,objs)
+train(objs)
 
-	
 
 cv2.waitKey(0)
 

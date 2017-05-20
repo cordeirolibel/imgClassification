@@ -24,7 +24,7 @@ for frame in camera.capture_continuous(rawCapture, format="bgr", use_video_port=
 	image = frame.array
 	
 	show(image,"Original", size = 300)
-	cv2.waitKey(10)
+	key1 = cv2.waitKey(10) & 0xFF
 
 	image = cutBorder(image, inv = inv)
 	#show(image, 'Without Border')
@@ -40,13 +40,13 @@ for frame in camera.capture_continuous(rawCapture, format="bgr", use_video_port=
 
 	show(image,"Final")
 	#cv2.imshow("Video", image)
-	key = cv2.waitKey(10) & 0xFF
+	key2 = cv2.waitKey(10) & 0xFF
 	
     # clear the stream in preparation for the next frame
 	rawCapture.truncate(0)
 	
     # if the `q` key was pressed, break from the loop
-	if key == ord("q"):
+	if (key1 == ord("q")) or (key2 == ord("q") ):
 		break
 		
 	#save image

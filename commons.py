@@ -36,6 +36,7 @@ class Object(object):
 	circle = None 	#square sum of the distance of contours and mean of contours
 	oblong = None 	#Reason between the large and small size
 	perimeter = None #contour perimeter
+	edges = None 	#aproximate the edges number 
 	red = None 		#Intensity of red
 	blue = None 	#Intensity of blue
 	green = None 	#Intensity of green

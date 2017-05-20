@@ -58,7 +58,7 @@ def attributes(img,objs):
 		obj.rect = cv2.minAreaRect(obj.cnt)
 
 		#Save the minimal image of each object
-		obj.imageSave(img)
+		#obj.imageSave(img)
 
 		#Find the center of mass of each object
 		obj.moments(img.shape)
@@ -92,7 +92,10 @@ def attributes(img,objs):
 
 		#Contour perimeter
 		obj.perimeter = cv2.arcLength(obj.cnt,True)
-
+		
+		#aproximate the edges number 
+		obj.edges = len(cv2.approxPolyDP(obj.cnt, 0.03 * obj.perimeter, True))
+		
 		#Intensity of colors <=====================Ver melhor isso ak, ele tira a media junto com a borda que eh sempre branca(todas as cores)
 		#mean_colors = cv2.mean(obj.img)
 		#obj.blue = mean_colors[0]
@@ -165,6 +168,7 @@ def drawCnts(img,objs_yes,objs_not, thickness = 4, attributes = False):
 					'circle: '+str(round(obj.circle,1)),\
 					'oblong: '+str(round(obj.oblong,2)),\
 					'perimeter: '+str(toInt(obj.perimeter)),\
+					'edges:'+str(obj.edges),\
 					'RperB: '+str(round(obj.red_per_blue,2)),\
 					'OutPerIn: '+str(round(obj.out_per_in,2))]
 		else:

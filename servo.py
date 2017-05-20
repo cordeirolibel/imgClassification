@@ -154,9 +154,20 @@ def smooth(servos,angles, wait = True):
     for servo in servos:
         servo.stop()
 
-#===================================================
-#=============Main
-#==================================================
+#move all sevos - not smooth
+def allMove(servos,angles, wait = True):
+    
+    #if is only 1 servo
+    if not isinstance(angles, (list, tuple)):
+        angles = [angles]
+    if not isinstance(servos, (list, tuple)):
+        servos = [servos]
+
+    for servo,ang in zip(servos,angles):
+        servo.setAngle(ang)
+        servo.wait()
+        servo.stop()
+
 
 
 
