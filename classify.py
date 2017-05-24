@@ -2,62 +2,96 @@
 #        Cordeiro Libel - UTFPR - may of 2017           #
 #-------------------------------------------------------#
 
-#from sklearn import svm
+#from     import svm
+from commons import *
+from sklearn.svm import SVC
+
+TESTES = 0.5 # 20% of data for the final test
 
 #identify all object by a number
 def name2num(name):
     return {
-        'red cube': 1,
-        'red sphere': 2,
-        'red L':3,
-        'red plus':4,
-        'blue cube':5,
-        'blue sphere':6,
-        'blue L':7,
-        'blue plus':8,
+        'cube': 1,
+        'sphere': 2, 
+        'L':3, 
+        'plus':4, 
+        'rect':5, 
+        'coin':6,
     }[name]
 
 
+def ColorClassify(obj):
+    if obj.red_per_blue > 1:
+        obj.name = 'red '+ obj.name
+    else:
+        obj.name = 'blue '+ obj.name
+
+#put in a list all attributes of object
+def dataLoad(obj):
+    data = []
+    data.append(obj.area)
+    data.append(obj.deform)
+    data.append(obj.circle)
+    data.append(obj.oblong)
+    data.append(obj.perimeter)
+    data.append(obj.edges)
+    data.append(obj.red_per_blue)
+    data.append(obj.out_per_in)
+
+    return data
+
 def train(objs):
 
-    #hog = cv2.HOGDescriptor(winSize)
-    #descriptor = hog.compute(im)
+    # =============== Data
 
-    #create a trainData and trainLabels
-    trainData = []
-    for obj in objs:
-        data = []
-        data.append(obj.area)
-        data.append(obj.deform)
-        data.append(obj.circle)
-        data.append(obj.oblong)
-        data.append(obj.perimeter)
-        data.append(obj.edges)
-        data.append(obj.red_per_blue)
-        data.append(obj.out_per_in)
+    n_objs = len(objs)
+    n_test = toInt(n_objs*TESTES)
 
-        trainData.append(data)
+    #create a train_data and train_labels
+    train_data = []
+    train_labels = []
 
-        trainLabels.append(name2num(obj.name))
-    print(trainData)
-    return
-    # Set up SVM for OpenCV 3
-    svm = cv2.ml.SVM_create()
-    # Set SVM type
-    svm.setType(cv2.ml.SVM_C_SVC)
-    # Set SVM Kernel to Radial Basis Function (RBF) 
-    svm.setKernel(cv2.ml.SVM_RBF)
-    # Set parameter C
-    svm.setC(12.5)
-    # Set parameter Gamma
-    svm.setGamma(0.50625)
-     
-    # Train SVM on training data  
-    svm.train(trainData, cv2.ml.ROW_SAMPLE, trainLabels)
-     
-    # Save trained model 
-    #svm->save("digits_svm_model.yml")
-     
-    # Test on a held out test set
-    testResponse = svm.predict(testData)[1].ravel()
+    for obj in objs[:n_objs-n_test]:
+        data = dataLoad(obj)
+
+        train_data.append(data)
+
+        train_labels.append(name2num(obj.name))
+
+    #create a list of test
+    test_data = []
+    test_labels = []
+    for obj in objs[n_objs-n_test:]:
+
+        data = dataLoad(obj)
+
+        test_data.append(data)
+
+        test_labels.append(name2num(obj.name))
+
+
+    # =============== Train
+    
+    clf = SVC()
+
+    #config
+    clf.kernel = 'linear'
+    #clf.kernel = 'poly'
+    clf.max_iter = 1000000
+    clf.tol = 1e-10
+    clf.probability = True
+    
+
+    #train
+    print(clf.fit(train_data, train_labels)) 
+
+    # =============== Result
+    
+    #print(clf.predict_log_proba(test_data))
+    print(clf.predict(test_data))
+    print(np.array(test_labels))
+
+    #print(clf.predict_proba(train_data))
+    print(clf.predict(train_data))
+    print(np.array(train_labels))
 

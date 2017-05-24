@@ -22,14 +22,13 @@ ANG_CLOSE = 60
 #===================================================
 #=============Init Servos GPIO 
 #===================================================
-try: #running only in raspberry
+if runOnRasp(): #running only in raspberry
     global pigpio
     pigpio = pigpio.pi()
     if not pigpio.connected:
         print("try >> sudo pigpiod")
         exit()
-except:
-    None
+
 #===================================================
 #=============Servo Class
 #===================================================
@@ -51,7 +50,8 @@ class Servo(object):
         
         pulse = valmap(ang,-90,90,PWM_MIN,PWM_MAX)
         
-        pigpio.set_servo_pulsewidth(self.pin, pulse) 
+        if runOnRasp():
+            pigpio.set_servo_pulsewidth(self.pin, pulse) 
         
         self.wait_time = abs(self.angle - ang)/SPEED
 
@@ -65,8 +65,9 @@ class Servo(object):
         smooth(self,ANG_CLOSE)
         
     def stop(self):
-        pigpio.set_servo_pulsewidth(self.pin, 0) 
-        None
+        if runOnRasp():
+            pigpio.set_servo_pulsewidth(self.pin, 0) 
+
 
     #wait the servo move (time defined in setAngle)
     def wait(self):

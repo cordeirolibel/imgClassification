@@ -16,37 +16,29 @@ from Tkinter import * #for buttons
 obj_name = ''
 
 # Events of Buttons
-def cubeR():
+def cube():
 	global obj_name
-	obj_name = 'red cube'
+	obj_name = 'cube'
 	root.quit() 
-def sphereR():
+def sphere():
 	global obj_name
-	obj_name = 'red sphere'
+	obj_name = 'sphere'
 	root.quit() 
-def LR():
+def L():
 	global obj_name
-	obj_name = 'red L'
+	obj_name = 'L'
 	root.quit() 
-def plusR():
+def plus():
 	global obj_name
-	obj_name = 'red plus'
+	obj_name = 'plus'
 	root.quit() 
-def cubeB():
+def rect():
 	global obj_name
-	obj_name = 'blue cube'
+	obj_name = 'rect'
 	root.quit() 
-def sphereB():
+def coin():
 	global obj_name
-	obj_name = 'blue sphere'
-	root.quit() 
-def LB():
-	global obj_name
-	obj_name = 'blue L'
-	root.quit() 
-def plusB():
-	global obj_name
-	obj_name = 'blue plus'
+	obj_name = 'coin'
 	root.quit() 
 def on_closing():
 	global obj_name
@@ -56,14 +48,12 @@ def on_closing():
 # Create buttons
 root = Tk()
 root.wm_title('Select object')
-Button(root, text='[ ] cube', fg='white', bg='red', command=cubeR).pack()
-Button(root, text='( ) sphere', fg='white', bg='red', command=sphereR).pack()
-Button(root, text='     L     ', fg='white', bg='red', command=LR).pack()
-Button(root, text='+ plus', fg='white', bg='red', command=plusR).pack()
-Button(root, text='[ ] cube', fg='white', bg='blue', command=cubeB).pack()
-Button(root, text='( ) sphere', fg='white', bg='blue', command=sphereB).pack()
-Button(root, text='     L     ', fg='white', bg='blue', command=LB).pack()
-Button(root, text='+ plus', fg='white', bg='blue', command=plusB).pack()
+Button(root, text='[ ] cube', command=cube).pack()
+Button(root, text='( ) sphere', command=sphere).pack()
+Button(root, text='     L     ', command=L).pack()
+Button(root, text=' + plus ', command=plus).pack()
+Button(root, text='[===] rect', command=rect).pack()
+Button(root, text='(#) coin', command=coin).pack()
 root.protocol("WM_DELETE_WINDOW", on_closing)
 
 k=1
@@ -79,6 +69,9 @@ while True:
 	#Contours - identify Objects
 	objs_yes,_ = identifyObjects(image)
 
+	#Calculate attributes for the Classification
+	attributes(image,objs_yes)
+
 	i=1
 	for obj in objs_yes:
 		#find and save the minimal image of each object
@@ -89,7 +82,7 @@ while True:
 		#wait for visual classification
 		show(obj.img,'image')
 		cv2.moveWindow('image', 300,20);
-		cv2.waitKey(1000)
+		cv2.waitKey(500)
 		root.mainloop()
 		#cv2.destroyWindow('image')
 
@@ -105,7 +98,9 @@ while True:
 		i +=1
 
 		print('objs'+str(k)+'-'+str(i)+'  '+obj_name)
+
 	k+=1
+
 
 	if obj_name is 'end':#escape
 		break

@@ -3,6 +3,7 @@
 #-------------------------------------------------------#
 
 #My libraries
+
 from commons import *
 from border import *
 from identify import *
@@ -16,13 +17,20 @@ from camera import *
 inv = False
 
 k=0
-camera.resolution = (1296, 972)
-for frame in camera.capture_continuous(rawCapture, format="bgr", use_video_port=True):
+
+if runOnRasp():
+    camera.resolution = (1296, 972)
+
+#for frame in camera.capture_continuous(rawCapture, format="bgr", use_video_port=True):
+while True :
 	print('frame: '+str(k))
 	k+=1
 
-	image = frame.array
-	
+	if runOnRasp():
+		image = frame.array
+	else:
+		image = capture()
+
 	show(image,"Original", size = 300)
 	key1 = cv2.waitKey(10) & 0xFF
 
@@ -43,7 +51,8 @@ for frame in camera.capture_continuous(rawCapture, format="bgr", use_video_port=
 	key2 = cv2.waitKey(10) & 0xFF
 	
     # clear the stream in preparation for the next frame
-	rawCapture.truncate(0)
+	if runOnRasp():
+		rawCapture.truncate(0)
 	
     # if the `q` key was pressed, break from the loop
 	if (key1 == ord("q")) or (key2 == ord("q") ):
@@ -51,8 +60,8 @@ for frame in camera.capture_continuous(rawCapture, format="bgr", use_video_port=
 		
 	#save image
 	#cv2.imwrite('imgs/teste.jpg',image)
-	#break
+	break
 
-#cv2.waitKey(0)
+cv2.waitKey(0)
 
 cv2.destroyAllWindows()

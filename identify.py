@@ -52,16 +52,17 @@ def identifyObjects(img, draw = True, inv = False):
 def attributes(img,objs):
 
 	for obj in objs:
-		#if img is not None:
 
 		#best rectangle of image in Point and angles
 		obj.rect = cv2.minAreaRect(obj.cnt)
 
 		#Save the minimal image of each object
+
 		#obj.imageSave(img)
 
-		#Find the center of mass of each object
-		obj.moments(img.shape)
+		if img is not None:
+			#Find the center of mass of each object
+			obj.moments(img.shape)
 
 		#Area
 		if obj.area is None:
@@ -96,16 +97,22 @@ def attributes(img,objs):
 		#aproximate the edges number 
 		obj.edges = len(cv2.approxPolyDP(obj.cnt, 0.03 * obj.perimeter, True))
 		
-		#Intensity of colors <=====================Ver melhor isso ak, ele tira a media junto com a borda que eh sempre branca(todas as cores)
-		#mean_colors = cv2.mean(obj.img)
-		#obj.blue = mean_colors[0]
-		#obj.green = mean_colors[1]
-		#obj.red = mean_colors[2]
-		#obj.red_per_blue = obj.red/obj.blue
-		obj.red_per_blue = 8000
+		#Intensity of colors 
+		if img is not None:
+			#cut the obj
+			mask = img.copy()
+			cv2.fillConvexPoly(mask,obj.cnt,(0,0,0))
+			mask = img - mask
+			#save the colors
+			mean_colors = cv2.mean(mask)
+			obj.blue = mean_colors[0]
+			obj.green = mean_colors[1]
+			obj.red = mean_colors[2]
+			obj.red_per_blue = obj.red/obj.blue
 
 		#White area per Area (White area: out of object, but in the rectangle rect)
 		obj.out_per_in = (cv2.contourArea(box) - obj.area)/obj.area
+
 
 #remove the simple shadow (not all shadow)
 def shadowRemove(img):
@@ -113,8 +120,10 @@ def shadowRemove(img):
 	imgHSV = cv2.cvtColor(img,cv2.COLOR_BGR2HSV)
 
 	#colors filter between color 1 and color2
-	mask = cv2.inRange(imgHSV,  np.array([0,0,0]),  np.array([255,130,179]))#in pc
-	#mask = cv2.inRange(imgHSV,  np.array([0,0,100]),  np.array([255,100,179]))#in raspberry 
+	if runOnRasp():#in raspberry 
+		mask = cv2.inRange(imgHSV,  np.array([0,0,100]),  np.array([255,100,179]))
+	else:#in pc
+		mask = cv2.inRange(imgHSV,  np.array([0,0,0]),  np.array([255,130,179]))
 
 	#removing noise of mask
 	kernel = cv2.getStructuringElement(cv2.MORPH_RECT,(4,4))

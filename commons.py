@@ -5,6 +5,7 @@
 import time
 import cv2
 import numpy as np
+import os
 
 try: #running only in raspberry
 	import pigpio # for pwm servos
@@ -65,7 +66,12 @@ class Object(object):
 		self.rect = cv2.minAreaRect(self.cnt)
 		self.img = cropMinRect(img,self.rect)
 
-
+#return true if run on a raspberry pi
+def runOnRasp():
+	if os.uname()[4][:3] == 'arm':
+		return True 
+	return False
+	
 # Resize to the max size to be max_size
 def resize(img, max_size = SIZE_IMG):
 	# Make a consistent size
