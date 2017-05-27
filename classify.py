@@ -5,10 +5,27 @@
 #from     import svm
 from commons import *
 from sklearn.svm import SVC
+import cPickle as pickle
 
-TESTES = 0.5 # 20% of data for the final test
+TESTES = 0.2 # 20% of data for the final test
+TRAIN = 'treino.out'
 
-#identify all object by a number
+#classify the obj, put a name
+def classify(objs):
+    #load train
+    clf = pickle.load(open(TRAIN,'rb'))
+
+    data = []
+    for obj in objs:
+        data.append(dataLoad(obj))
+
+    nums = clf.predict(data)
+
+    for obj,num in zip(objs,nums):
+        obj.name = num2name(num)
+        ColorClassify(obj)
+
+#identify all object by a nome
 def name2num(name):
     return {
         'cube': 1,
@@ -19,6 +36,16 @@ def name2num(name):
         'coin':6,
     }[name]
 
+#identify all object by a number
+def num2name(num):
+    return {
+        1:'cube',
+        2:'sphere', 
+        3:'L', 
+        4:'plus', 
+        5:'rect', 
+        6:'coin',
+    }[num]
 
 def ColorClassify(obj):
     if obj.red_per_blue > 1:
@@ -78,7 +105,7 @@ def train(objs):
     clf.kernel = 'linear'
     #clf.kernel = 'poly'
     clf.max_iter = 1000000
-    clf.tol = 1e-10
+    clf.tol = 1e-8
     clf.probability = True
     
 
@@ -91,7 +118,10 @@ def train(objs):
     print(clf.predict(test_data))
     print(np.array(test_labels))
 
+
     #print(clf.predict_proba(train_data))
     print(clf.predict(train_data))
     print(np.array(train_labels))
 
+    #save train
+    pickle.dump( clf, open(TRAIN, 'wb' ) )

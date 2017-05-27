@@ -68,10 +68,12 @@ class Object(object):
 
 #return true if run on a raspberry pi
 def runOnRasp():
-	if os.uname()[4][:3] == 'arm':
-		return True 
-	return False
-	
+	try:
+		if os.uname()[4][:3] == 'arm':
+			return True 
+		return False
+	except:
+		return False
 # Resize to the max size to be max_size
 def resize(img, max_size = SIZE_IMG):
 	# Make a consistent size

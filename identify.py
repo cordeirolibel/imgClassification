@@ -113,6 +113,7 @@ def attributes(img,objs):
 		#White area per Area (White area: out of object, but in the rectangle rect)
 		obj.out_per_in = (cv2.contourArea(box) - obj.area)/obj.area
 
+		
 
 #remove the simple shadow (not all shadow)
 def shadowRemove(img):

@@ -59,7 +59,7 @@ root.protocol("WM_DELETE_WINDOW", on_closing)
 k=1
 while True:
 	#open all images with name
-	image = cv2.imread('imgs/objs'+str(k)+'.jpg')
+	image = cv2.imread('imgs/img'+str(k)+'.jpg')
 
 	if image is None:
 		break
@@ -71,7 +71,7 @@ while True:
 
 	#Calculate attributes for the Classification
 	attributes(image,objs_yes)
-
+	show(image,'original')
 	i=1
 	for obj in objs_yes:
 		#find and save the minimal image of each object

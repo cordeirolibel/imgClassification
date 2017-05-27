@@ -9,6 +9,7 @@ from border import *
 from identify import *
 from servo import *
 from camera import *
+from classify import *
 
 #=============================================
 #======MAIN
@@ -16,7 +17,7 @@ from camera import *
 
 inv = False
 
-k=0
+k=1
 
 if runOnRasp():
     camera.resolution = (1296, 972)
@@ -24,15 +25,15 @@ if runOnRasp():
 #for frame in camera.capture_continuous(rawCapture, format="bgr", use_video_port=True):
 while True :
 	print('frame: '+str(k))
-	k+=1
+	
 
 	if runOnRasp():
 		image = frame.array
 	else:
 		image = capture()
 
-	show(image,"Original", size = 300)
-	key1 = cv2.waitKey(10) & 0xFF
+	#show(image,"Original", size = 300)
+	#key1 = cv2.waitKey(10) & 0xFF
 
 	image = cutBorder(image, inv = inv)
 	#show(image, 'Without Border')
@@ -43,21 +44,25 @@ while True :
 	#Calculate attributes for the Deep Learning
 	attributes(image,objs_yes)
 
+	#classity the objs
+	classify(objs_yes)
+
 	#Draw the contours and the center of mass
-	image = drawCnts(image,objs_yes,objs_not, attributes = True)
+	image = drawCnts(image,objs_yes,objs_not)
 
 	show(image,"Final")
 	#cv2.imshow("Video", image)
 	key2 = cv2.waitKey(10) & 0xFF
-	
+	key1 = key2
+
     # clear the stream in preparation for the next frame
 	if runOnRasp():
 		rawCapture.truncate(0)
 	
     # if the `q` key was pressed, break from the loop
 	if (key1 == ord("q")) or (key2 == ord("q") ):
-		break
-		
+		break		
+	
 	#save image
 	#cv2.imwrite('imgs/teste.jpg',image)
 	break

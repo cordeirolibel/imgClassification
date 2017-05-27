@@ -4,7 +4,7 @@
 
 from commons import *
 
-FILE = 'imgs/objs1.jpg'
+FILE = 'imgs/img27.jpg'
 
 #===================================================
 #=============Init Camera
