@@ -22,8 +22,8 @@ k=1
 if runOnRasp():
     camera.resolution = (1296, 972)
 
-#for frame in camera.capture_continuous(rawCapture, format="bgr", use_video_port=True):
-while True :
+for frame in camera.capture_continuous(rawCapture, format="bgr", use_video_port=True):
+#while True :
 	print('frame: '+str(k))
 	
 
@@ -48,7 +48,9 @@ while True :
 	classify(objs_yes)
 
 	#Draw the contours and the center of mass
+
 	image = drawCnts(image,objs_yes,objs_not)
+
 
 	show(image,"Final")
 	#cv2.imshow("Video", image)
@@ -62,6 +64,7 @@ while True :
     # if the `q` key was pressed, break from the loop
 	if (key1 == ord("q")) or (key2 == ord("q") ):
 		break		
+
 	
 	#save image
 	#cv2.imwrite('imgs/teste.jpg',image)
