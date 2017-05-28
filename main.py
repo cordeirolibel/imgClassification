@@ -15,27 +15,24 @@ from classify import *
 #======MAIN
 #=============================================
 
-inv = False
-
 k=1
-
 if runOnRasp():
-    camera.resolution = (1296, 972)
-
-for frame in camera.capture_continuous(rawCapture, format="bgr", use_video_port=True):
-#while True :
-	print('frame: '+str(k))
-	
+	#camera.resolution = (3280, 2464)
+	#camera.resolution = (2592, 1944)
+	#camera.resolution = (1296, 972)
+	camera.resolution = (1920, 1088)
+	#camera.resolution = (640, 480)
+        
+while True :
+	print('Image: '+str(k))
 
 	if runOnRasp():
-		image = frame.array
+		video()
+		image = capture(True)
 	else:
 		image = capture()
 
-	#show(image,"Original", size = 300)
-	#key1 = cv2.waitKey(10) & 0xFF
-
-	image = cutBorder(image, inv = inv)
+	image = cutBorder(image)
 	#show(image, 'Without Border')
 
 	#Contours - identify Objects
@@ -48,27 +45,15 @@ for frame in camera.capture_continuous(rawCapture, format="bgr", use_video_port=
 	classify(objs_yes)
 
 	#Draw the contours and the center of mass
-
-	image = drawCnts(image,objs_yes,objs_not)
-
-
-	show(image,"Final")
-	#cv2.imshow("Video", image)
-	key2 = cv2.waitKey(10) & 0xFF
-	key1 = key2
-
-    # clear the stream in preparation for the next frame
-	if runOnRasp():
-		rawCapture.truncate(0)
+	image = drawCnts(image,objs_yes,objs_not)  	
 	
-    # if the `q` key was pressed, break from the loop
-	if (key1 == ord("q")) or (key2 == ord("q") ):
-		break		
-
-	
+	show(image,'out')
+	cv2.waitKey(0)
 	#save image
 	#cv2.imwrite('imgs/teste.jpg',image)
-	break
+	
+	if not runOnRasp():
+		break
 
 cv2.waitKey(0)
 

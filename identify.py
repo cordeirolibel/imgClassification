@@ -137,7 +137,7 @@ def shadowRemove(img):
 	return img
 
 #Draw the contours and the center of mass
-def drawCnts(img,objs_yes,objs_not, thickness = 4, attributes = False):
+def drawCnts(img,objs_yes,objs_not = None, thickness = 4, attributes = False):
 
 	img = img.copy()
 
@@ -146,48 +146,52 @@ def drawCnts(img,objs_yes,objs_not, thickness = 4, attributes = False):
 		img = cv2.cvtColor(img,cv2.COLOR_GRAY2BGR)
 
 	#Draw in green contours accepted
-	for obj in objs_yes:
-		cv2.drawContours(img,obj.cnt,-1,(0,255,0),thickness)
+	if not objs_yes is None:
+		for obj in objs_yes:
+			cv2.drawContours(img,obj.cnt,-1,(0,255,0),thickness)
 
 	#Draw in red contours refused
-	for obj in objs_not:
-		cv2.drawContours(img,obj.cnt,-1,(0,0,255),thickness)
+	if not objs_not is None:
+		for obj in objs_not:
+			cv2.drawContours(img,obj.cnt,-1,(0,0,255),thickness)
 
 	#Draw a rectangle of each obj
-	for obj in objs_yes:
-		if cv2.__version__[0] is '3':
-			box = cv2.boxPoints(obj.rect)
-		else: #version 2.x.x
-			box = cv2.cv.BoxPoints(obj.rect)
-			box = np.array(box)
-		box = toInt(box)
-		cv2.drawContours(img,[box],-1,(255,50,255),thickness)
+	if not objs_yes is None:
+		for obj in objs_yes:
+			if cv2.__version__[0] is '3':
+				box = cv2.boxPoints(obj.rect)
+			else: #version 2.x.x
+				box = cv2.cv.BoxPoints(obj.rect)
+				box = np.array(box)
+			box = toInt(box)
+			cv2.drawContours(img,[box],-1,(255,50,255),thickness)
 
 	#Draw the center of mass of each object in blue
-	for obj in objs_yes:
-		cv2.circle(img, (toInt(obj.pt_img)),2*thickness, (0,0,0),-1)
+	if not objs_yes is None:
+		for obj in objs_yes:
+			cv2.circle(img, (toInt(obj.pt_img)),2*thickness, (0,0,0),-1)
 
-		#converting points
-		pt_text = (int(obj.pt_img[0])+25,int(obj.pt_img[1])+25)
+			#converting points
+			pt_text = (int(obj.pt_img[0])+25,int(obj.pt_img[1])+25)
 
-		#define text
-		if attributes:
-			text = [str(obj.pt),\
-					'area: '+str(obj.area),\
-					'deform: '+str(round(obj.deform,2)),\
-					'circle: '+str(round(obj.circle,1)),\
-					'oblong: '+str(round(obj.oblong,2)),\
-					'perimeter: '+str(toInt(obj.perimeter)),\
-					'edges:'+str(obj.edges),\
-					'RperB: '+str(round(obj.red_per_blue,2)),\
-					'OutPerIn: '+str(round(obj.out_per_in,2))]
-		else:
-			text = [str(obj.pt)]
-		if obj.name is not None:
-			text = [obj.name]+ text
-		#write text
-		for line in text:
-			pt_text = (pt_text[0],pt_text[1]+thickness*5)
-			cv2.putText(img,line,pt_text,cv2.FONT_HERSHEY_SIMPLEX,thickness/5.0, (0,0,0),thickness/2 )
+			#define text
+			if attributes:
+				text = [str(obj.pt),\
+						'area: '+str(obj.area),\
+						'deform: '+str(round(obj.deform,2)),\
+						'circle: '+str(round(obj.circle,1)),\
+						'oblong: '+str(round(obj.oblong,2)),\
+						'perimeter: '+str(toInt(obj.perimeter)),\
+						'edges:'+str(obj.edges),\
+						'RperB: '+str(round(obj.red_per_blue,2)),\
+						'OutPerIn: '+str(round(obj.out_per_in,2))]
+			else:
+				text = [str(obj.pt)]
+			if obj.name is not None:
+				text = [obj.name]+ text
+			#write text
+			for line in text:
+				pt_text = (pt_text[0],pt_text[1]+thickness*5)
+				cv2.putText(img,line,pt_text,cv2.FONT_HERSHEY_SIMPLEX,thickness/5.0, (0,0,0),thickness/2 )
 
 	return img

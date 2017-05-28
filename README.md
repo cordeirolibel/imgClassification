@@ -11,3 +11,10 @@ OpenCV = 3.2.0
 numpy
 
 time
+
+scikit-learn
+
+pigpio
+
+picamera >=1.8
+

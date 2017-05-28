@@ -22,6 +22,7 @@ SIDE = 1000 #for the cartesian plan
 AREA_MIN = SIDE*SIDE*0.005
 AREA_MAX = SIDE*SIDE*0.020
 
+
 class Object(object):
 	cnt = None 	#contours
 	pt = None  	#Point in Cartesian plane (mass center)
@@ -66,6 +67,7 @@ class Object(object):
 		self.rect = cv2.minAreaRect(self.cnt)
 		self.img = cropMinRect(img,self.rect)
 
+	
 #return true if run on a raspberry pi
 def runOnRasp():
 	try:
@@ -74,6 +76,7 @@ def runOnRasp():
 		return False
 	except:
 		return False
+		
 # Resize to the max size to be max_size
 def resize(img, max_size = SIZE_IMG):
 	# Make a consistent size

@@ -10,15 +10,19 @@ import cPickle as pickle
 TESTES = 0.2 # 20% of data for the final test
 TRAIN = 'treino.out'
 
+
 #classify the obj, put a name
 def classify(objs):
+    
     #load train
     clf = pickle.load(open(TRAIN,'rb'))
 
     data = []
     for obj in objs:
         data.append(dataLoad(obj))
-
+    
+    if data is []:
+        return
     nums = clf.predict(data)
 
     for obj,num in zip(objs,nums):
@@ -68,7 +72,7 @@ def dataLoad(obj):
     return data
 
 def train(objs):
-
+    
     # =============== Data
 
     n_objs = len(objs)
@@ -98,9 +102,8 @@ def train(objs):
 
 
     # =============== Train
-    
     clf = SVC()
-
+    
     #config
     clf.kernel = 'linear'
     #clf.kernel = 'poly'

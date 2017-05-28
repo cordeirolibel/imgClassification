@@ -3,7 +3,8 @@
 #-------------------------------------------------------#
 
 from commons import *
-
+from border import *
+from identify import *
 FILE = 'imgs/img27.jpg'
 
 #===================================================
@@ -27,20 +28,23 @@ except:
 def capture(cam = False):
 
     global camera, rawCapture
-    
 
     #====CAPTURE IMAGE FROM CAMERA
     if cam is True:
+        # clear the stream 
+        rawCapture.seek(0)
+        rawCapture.truncate()
+        
         # grab an image from the camera
-        camera.capture(rawCapture, format='bgr')
+        camera.capture(rawCapture, format='bgr',use_video_port = True)
         img = rawCapture.array
 
     #======CAPTURE IMAGE FROM FILE
     else:
         img = cv2.imread(FILE)
-        
+    
     return img
-
+        
 #start a video, close the window with key 'q'
 def video():
     global camera
@@ -50,7 +54,8 @@ def video():
     camera.resolution = (640, 480)
     camera.framerate = 32
     rawCapture = PiRGBArray(camera, size=(640, 480))
-    
+
+
     # capture frames from the camera
     for frame in camera.capture_continuous(rawCapture, format="bgr", use_video_port=True):
         # grab the raw NumPy array representing the image, then initialize the timestamp
@@ -58,17 +63,21 @@ def video():
         image = frame.array
      
         # show the frame
-        cv2.imshow("Video", image)
+        show(image,'video', size = SIZE_IMG*2/3)
+        #cv2.imshow("Frame", image)
         key = cv2.waitKey(1) & 0xFF
      
         # clear the stream in preparation for the next frame
-        rawCapture.truncate(0)
+        rawCapture.seek(0)
+        rawCapture.truncate()
      
-        # if the `q` key was pressed, break from the loop
+        # exit
         if key == ord("q"):
+            quit()
+            
+        # exit loop
+        elif key == ord(" "):
             break
-    
-    cv2.destroyWindow("Video")
 
     #return to original
     camera.resolution = resolution
