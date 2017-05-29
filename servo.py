@@ -56,7 +56,6 @@ class Servo(object):
         self.wait_time = abs(self.angle - ang)/SPEED
 
         self.angle = ang
-    
 
     def open(self):
         smooth(self,ANG_OPEN)
@@ -101,7 +100,7 @@ class Servo(object):
 
 BETA = 0.4 # convergence speed ]0,1] NEVER ZERO
 SPEED_MED = SPEED/2 #this speed define time T
-SLEEP = 0.005 #0.001 - max accuracy, 0.005 - Recomanded
+SLEEP = 0.05 # 0.05 - Recomanded
 
 def smooth(servos,angles, wait = True):
     

@@ -13,40 +13,6 @@ ang2 = 0
 ang3 = 0
 take = False
 
-#set ang1 with mouse wheel
-def mouse_wheel(event):
-    global ang1
-
-    # respond to Linux or Windows wheel event
-    if event.num == 5 or event.delta == -120:
-        ang1 -= speed
-    if event.num == 4 or event.delta == 120:
-        ang1 += speed
-
-    if ang1<-90:
-        ang1 =-90
-    elif ang1>90:
-        ang1 = 90
-
-    #print
-    label['text'] = [ang1,ang2,ang3]
-
-    root.quit() 
-
-#set ang2 e ang3 with mouse movement
-def motion(event):
-    global ang2, ang3
-
-    x, y = event.x, event.y
-    
-    ang2 = toInt(x/2-90)
-    ang3 = toInt(y/2-90)
-
-    #print
-    label['text'] = [ang1,ang2,ang3]
-
-    root.quit() 
-
 #set speed of scroll and quit
 def keys(event):
     global speed, ang1, ang2, ang3, take
@@ -92,21 +58,8 @@ def keys(event):
     root.quit() 
    
 
-#set 'take' with click button
-def click(event):
-    global take
-    if event.type is '4':
-        print('Close')
-        take = True
-    elif event.type is '5':
-        print('Open')
-        take = False
-        
-    root.quit() 
-    
-
-#return the 3 angles if mouse moves
-def mouse():
+#return the 3 angles and take
+def update():
     root.mainloop()
     return take, [ang1,ang2,ang3]
 
@@ -123,45 +76,25 @@ root.protocol("WM_DELETE_WINDOW", on_closing)
 label = tk.Label(root, font=('courier', 18, 'bold'), width=20)
 label.pack(padx=40, pady=40)
 
-#========== Mouse move
-
-root.bind('<Motion>', motion)
-
-#========== Mouse Wheel
-
-# with Windows OS
-root.bind("<MouseWheel>", mouse_wheel)
-# with Linux OS
-root.bind("<Button-4>", mouse_wheel)
-root.bind("<Button-5>", mouse_wheel)
-
 #========== Keys
 
 root.bind('<Key>', keys)
-
-#========== Keys
-
-root.bind('<ButtonPress-1>', click)
-root.bind('<ButtonRelease-1>', click)     
-
-
-
-
 
 
 #=====================================================
 #===========MAIN
 #=====================================================
-# pins 6 13 19 26 gnd
-servos = [Servo(26),Servo(19),Servo(13)]
 
+#rasp pins:  6 13 19 26 gnd
+servos = [Servo(26),Servo(19),Servo(13)]
 servo_hand = Servo(6)
+
 
 while(1):
 
-    claw,angles = mouse()
-    smooth(servos,angles)
-    #allMove(servos,angles)
+    claw,angles = update()
+    #smooth(servos,angles)
+    allMove(servos,angles)
     if claw:
         servo_hand.close()
     else:
