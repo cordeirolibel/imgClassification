@@ -5,6 +5,7 @@
 #from     import svm
 from commons import *
 from sklearn.svm import SVC
+from sklearn import preprocessing
 import cPickle as pickle
 
 TESTES = 0.2 # 20% of data for the final test
@@ -15,17 +16,25 @@ TRAIN = 'treino.out'
 def classify(objs):
     
     #load train
-    clf = pickle.load(open(TRAIN,'rb'))
+    if runOnRasp(): 
+        clf,scale = pickle.load(open(TRAIN,'rb'))
+    else:
+        clf,scale = pickle.load(open('p'+TRAIN,'rb'))
 
+    #data of objs
     data = []
     for obj in objs:
         data.append(dataLoad(obj))
-    
+
+    data = scale.transform(data)
+
     if data is []:
         return
-    nums = clf.predict(data)
 
-    for obj,num in zip(objs,nums):
+    #classify
+    nums = clf.predict(data)#obj
+
+    for obj,num in zip(objs,nums):#color
         obj.name = num2name(num)
         ColorClassify(obj)
 
@@ -67,6 +76,7 @@ def dataLoad(obj):
     data.append(obj.perimeter)
     data.append(obj.edges)
     data.append(obj.red_per_blue)
+    data.append(obj.center_per_int)
     data.append(obj.out_per_in)
 
     return data
@@ -100,31 +110,37 @@ def train(objs):
 
         test_labels.append(name2num(obj.name))
 
+    #scale the data
+    scale = preprocessing.MinMaxScaler()
+    train_data = scale.fit_transform(train_data)
+    test_data = scale.transform(test_data)
 
     # =============== Train
     clf = SVC()
     
     #config
-    clf.kernel = 'linear'
-    #clf.kernel = 'poly'
-    clf.max_iter = 1000000
+    #It must be one of 'linear', 'poly', 'rbf', 'sigmoid', 'precomputed' 
+    clf.kernel = 'rbf'
+    clf.max_iter = 100000
+    #clf.degree = 10
+    clf.gamma = 10
     clf.tol = 1e-8
     clf.probability = True
     
 
-    #train
+    #Train
     print(clf.fit(train_data, train_labels)) 
 
     # =============== Result
     
-    #print(clf.predict_log_proba(test_data))
-    print(clf.predict(test_data))
-    print(np.array(test_labels))
+    erro = np.mean( clf.predict(test_data) != np.array(test_labels))
+    print('Erro test: '+str(erro))
 
-
-    #print(clf.predict_proba(train_data))
-    print(clf.predict(train_data))
-    print(np.array(train_labels))
+    erro = np.mean( clf.predict(train_data) != np.array(train_labels))
+    print('Erro Train: '+str(erro))
 
     #save train
-    pickle.dump( clf, open(TRAIN, 'wb' ) )
+    if runOnRasp(): 
+        pickle.dump( [clf,scale], open(TRAIN, 'wb' ) )
+    else:
+        pickle.dump( [clf,scale], open('p'+TRAIN, 'wb' ) )

@@ -60,7 +60,7 @@ def attributes(img,objs):
 
 		#obj.imageSave(img)
 
-		if img is not None:
+		if not img is None:
 			#Find the center of mass of each object
 			obj.moments(img.shape)
 
@@ -96,7 +96,8 @@ def attributes(img,objs):
 		
 		#aproximate the edges number 
 		obj.edges = len(cv2.approxPolyDP(obj.cnt, 0.03 * obj.perimeter, True))
-		
+
+
 		#Intensity of colors 
 		if img is not None:
 			#cut the obj
@@ -113,7 +114,37 @@ def attributes(img,objs):
 		#White area per Area (White area: out of object, but in the rectangle rect)
 		obj.out_per_in = (cv2.contourArea(box) - obj.area)/obj.area
 
-		
+
+		#   ____ coin_
+		#  /    \    |
+		# |  []  |   | 73 pixels (0 to 72)    (36,36)center
+		#  \    /    | difference of color between internal and center
+		#   ----     -
+		if not img is None:
+			#copys
+			pt = toInt(obj.pt_img)
+			img_obj = img[pt[1]-36:pt[1]+37,pt[0]-36:pt[0]+37]
+			mask = img_obj.copy()
+			img_center = img_obj.copy()
+			img_disk = img_obj.copy()
+			#crop
+			#mini circle (radius: 12)
+			cv2.circle(mask,(36,36),12,(0,0,0), -1, 8, 0)
+			img_center[mask > 0] = 0
+			#disk (radius: 20 to 28)
+			cv2.circle(mask,(36,36),20,(0,0,0), -1, 8, 0)
+			img_disk[mask == 0] = 0
+			cv2.circle(mask,(36,36),28,(0,0,0), -1, 8, 0)
+			img_disk[mask > 0] = 0
+			# colors 
+			color_center = img_center.sum((0,1))/(img_center != 0).sum((0,1))
+			color_disk  = img_disk.sum((0,1))/(img_disk != 0).sum((0,1))
+			#save
+			if obj.red_per_blue<1:#blue
+				obj.center_per_int = color_center[0]/color_disk[0]
+			else:#red
+				obj.center_per_int = color_center[2]/color_disk[2]
+
 
 #remove the simple shadow (not all shadow)
 def shadowRemove(img):
@@ -184,6 +215,7 @@ def drawCnts(img,objs_yes,objs_not = None, thickness = 4, attributes = False):
 						'perimeter: '+str(toInt(obj.perimeter)),\
 						'edges:'+str(obj.edges),\
 						'RperB: '+str(round(obj.red_per_blue,2)),\
+						'CENTperIN: '+str(round(obj.center_per_int,2)),\
 						'OutPerIn: '+str(round(obj.out_per_in,2))]
 			else:
 				text = [str(obj.pt)]

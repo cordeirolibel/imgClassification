@@ -44,6 +44,7 @@ class Object(object):
 	green = None 	#Intensity of green
 	red_per_blue = None #Red per Blue
 	out_per_in = None #White area per Area (White area: out of object, but in the rectangle rect)
+	center_per_int = None #Difference of color between internal and center - for the coin
 
 	def __init__(self, cnt, area = None):
 		self.cnt = cnt
