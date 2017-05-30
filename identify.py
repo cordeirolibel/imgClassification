@@ -25,10 +25,10 @@ def categoryCnts(img,contours):
 	return objs_yes, objs_not
 
 #Identify all objets and save the contours
-def identifyObjects(img, draw = True, inv = False):
+def identifyObjects(img, draw = True, inv = False,force_rasp = False):
 
 	#remove shawdow, because it is not an object
-	img = shadowRemove(img)
+	img = shadowRemove(img,force_rasp)
 
 	#show(img,"sem sombra")
 	image_b = binaryImg(img, inv = inv)
@@ -147,13 +147,14 @@ def attributes(img,objs):
 
 
 #remove the simple shadow (not all shadow)
-def shadowRemove(img):
+def shadowRemove(img, force_rasp = False):
 
 	imgHSV = cv2.cvtColor(img,cv2.COLOR_BGR2HSV)
 
 	#colors filter between color 1 and color2
-	if runOnRasp():#in raspberry 
-		mask = cv2.inRange(imgHSV,  np.array([0,0,100]),  np.array([255,100,179]))
+	if runOnRasp() or force_rasp:#in raspberry 
+		#mask = cv2.inRange(imgHSV,  np.array([0,0,100]),  np.array([255,100,179]))
+		mask = cv2.inRange(imgHSV,  np.array([0,0,70]),  np.array([255,120,179]))
 	else:#in pc
 		mask = cv2.inRange(imgHSV,  np.array([0,0,0]),  np.array([255,130,179]))
 

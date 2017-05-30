@@ -67,7 +67,7 @@ while True:
 	image = cutBorder(image)
 	
 	#Contours - identify Objects
-	objs_yes,_ = identifyObjects(image)
+	objs_yes,_ = identifyObjects(image, force_rasp = True)
 
 	#Calculate attributes for the Classification
 	attributes(image,objs_yes)
@@ -101,6 +101,8 @@ while True:
 
 	k+=1
 
+	if k is 11:
+		break
 
 	if obj_name is 'end':#escape
 		break
