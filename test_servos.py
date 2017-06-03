@@ -94,10 +94,12 @@ while(1):
 
     claw,angles = update()
     #smooth(servos,angles)
-    allMove(servos,angles)
+    #allMove(servos,angles)
     if claw:
+        servos[0].setAngle(90)
         servo_hand.close()
     else:
+        servos[0].setAngle(-90)
         servo_hand.open()
 
 

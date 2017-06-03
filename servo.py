@@ -99,7 +99,7 @@ class Servo(object):
 #
 
 BETA = 0.4 # convergence speed ]0,1] NEVER ZERO
-SPEED_MED = SPEED/2 #this speed define time T
+SPEED_MED = SPEED/4 #this speed define time T
 SLEEP = 0.05 # 0.05 - Recomanded
 
 def smooth(servos,angles, wait = True):
@@ -139,7 +139,7 @@ def smooth(servos,angles, wait = True):
         k+=1
         for servo,ang1,ang2, _time in zip(servos,init_ang,angles, times):
             if dtime > _time:# servo movement finished
-                servo.stop()
+                #servo.stop()
                 continue
             if _time == 0:
                 continue
@@ -151,8 +151,8 @@ def smooth(servos,angles, wait = True):
             time.sleep(SLEEP)
         
     #stop all servos
-    for servo in servos:
-        servo.stop()
+    #for servo in servos:
+    #    servo.stop()
 
 #move all sevos - not smooth
 def allMove(servos,angles, wait = True):

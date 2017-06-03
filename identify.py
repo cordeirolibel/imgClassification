@@ -137,13 +137,13 @@ def attributes(img,objs):
 			cv2.circle(mask,(36,36),28,(0,0,0), -1, 8, 0)
 			img_disk[mask > 0] = 0
 			# colors 
-			color_center = img_center.sum((0,1))/(img_center != 0).sum((0,1))
-			color_disk  = img_disk.sum((0,1))/(img_disk != 0).sum((0,1))
+			color_center = 1.0*img_center.sum((0,1))/(img_center != 0).sum((0,1))
+			color_disk  = 1.0*img_disk.sum((0,1))/(img_disk != 0).sum((0,1))
 			#save
 			if obj.red_per_blue<1:#blue
-				obj.center_per_int = color_center[0]/color_disk[0]
+				obj.center_per_int = 1.0*color_center[0]/color_disk[0]
 			else:#red
-				obj.center_per_int = color_center[2]/color_disk[2]
+				obj.center_per_int = 1.0*color_center[2]/color_disk[2]
 
 
 #remove the simple shadow (not all shadow)
@@ -216,7 +216,7 @@ def drawCnts(img,objs_yes,objs_not = None, thickness = 4, attributes = False):
 						'perimeter: '+str(toInt(obj.perimeter)),\
 						'edges:'+str(obj.edges),\
 						'RperB: '+str(round(obj.red_per_blue,2)),\
-						'CENTperIN: '+str(round(obj.center_per_int,2)),\
+						'CENTperIN: '+str(round(obj.center_per_int,3)),\
 						'OutPerIn: '+str(round(obj.out_per_in,2))]
 			else:
 				text = [str(obj.pt)]

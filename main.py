@@ -19,13 +19,14 @@ k=1
 if runOnRasp():
 	#camera.resolution = (3280, 2464)
 	#camera.resolution = (2592, 1944)
-	camera.resolution = (1296, 972)
+	camera.resolution = (1296, 976)
 	#camera.resolution = (1920, 1088)
 	#camera.resolution = (640, 480)
         
 while True :
 	print('Image: '+str(k))
-
+	k+=1
+	
 	if runOnRasp():
 		video()
 		image = capture(True)
@@ -46,10 +47,10 @@ while True :
 	classify(objs_yes)
 
 	#Draw the contours and the center of mass
-	image = drawCnts(image,objs_yes,objs_not)  	
+	image = drawCnts(image,objs_yes,objs_not,thickness=3,attributes=True)  	
 	
 	show(image,'out')
-	cv2.waitKey(0)
+	#cv2.waitKey(0)
 	#save image
 	#cv2.imwrite('imgs/teste.jpg',image)
 	
