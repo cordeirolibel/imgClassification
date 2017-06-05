@@ -1,5 +1,5 @@
-#>>>>>>>>          Camera Functions           <<<<<<<<<<#
-#        Cordeiro Libel - UTFPR - may of 2017           #
+#>>>>>>>>         Classify Functions          <<<<<<<<<<#
+#        Cordeiro Libel - UTFPR -  2017                 #
 #-------------------------------------------------------#
 
 #from     import svm

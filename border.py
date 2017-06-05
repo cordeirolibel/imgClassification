@@ -1,5 +1,5 @@
 #>>>>>>>>	   Cutting Border Functions	      <<<<<<<<<<#
-#		Cordeiro Libel - UTFPR - April of 2016	  	    #
+#		Cordeiro Libel - UTFPR - 2017			  	    #
 #-------------------------------------------------------#
 
 #My libraries
@@ -103,7 +103,7 @@ def findCorner(points,x_max,y_max):
 
 	return four_points
 
-def cutBorder(img, fix_size = True, size = SIDE, inv = False):
+def cutBorder(img, fix_size = True, size = SIDE, inv = False, draw = False):
 	# ==> Step 1: Resize 
 	#We have 2 options (uncomment):
 
@@ -135,7 +135,16 @@ def cutBorder(img, fix_size = True, size = SIDE, inv = False):
 	four_points = findCorner(cnt,small_img.shape[1],small_img.shape[0])
 
 	#uncomment to print contours
-	#cv2.drawContours(small_img,[four_points],-1,(255,0,0),5)
+	if draw:
+		pts = four_points.copy()
+		#swap
+		tmp = pts[0].copy()
+		pts[0]=pts[1].copy()
+		pts[1]=tmp.copy()
+
+		print(pts)
+		print(four_points)
+		cv2.drawContours(small_img,[pts],-1,(255,0,0),5)
 	#show(small_img)
 
 	# ==> Step 4: Cut

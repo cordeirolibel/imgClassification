@@ -1,5 +1,5 @@
 #>>>>>>>>	Image classification - OpenCV	  <<<<<<<<<<#
-#		Cordeiro Libel - UTFPR - April of 2016		    #
+#		Cordeiro Libel - UTFPR - 2017       		    #
 #-------------------------------------------------------#
 
 #My libraries

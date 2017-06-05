@@ -1,5 +1,5 @@
 #>>>>>>>>		  Commons Functions		      <<<<<<<<<<#
-#		Cordeiro Libel - UTFPR - April of 2016		    #
+#		Cordeiro Libel - UTFPR - 2017       		    #
 #-------------------------------------------------------#
 
 import time

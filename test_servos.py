@@ -1,4 +1,4 @@
-#>>>>>>>>          Camera Functions           <<<<<<<<<<#
+#>>>>>>>>       Servos by keyboard            <<<<<<<<<<#
 #        Cordeiro Libel - UTFPR - may of 2017           #
 #-------------------------------------------------------#
 
@@ -89,17 +89,16 @@ root.bind('<Key>', keys)
 servos = [Servo(26),Servo(19),Servo(13)]
 servo_hand = Servo(6)
 
+start(servos+[servo_hand])
 
 while(1):
 
     claw,angles = update()
     #smooth(servos,angles)
-    #allMove(servos,angles)
+    allMove(servos,angles)
     if claw:
-        servos[0].setAngle(90)
         servo_hand.close()
     else:
-        servos[0].setAngle(-90)
         servo_hand.open()
 
 

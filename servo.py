@@ -1,5 +1,5 @@
-#>>>>>>>>      Cutting Border Functions       <<<<<<<<<<#
-#        Cordeiro Libel - UTFPR - may of 2016           #
+#>>>>>>>>       Servo Functions               <<<<<<<<<<#
+#        Cordeiro Libel - UTFPR - 2017                  #
 #-------------------------------------------------------#
 
 from commons import *
@@ -102,7 +102,7 @@ BETA = 0.4 # convergence speed ]0,1] NEVER ZERO
 SPEED_MED = SPEED/4 #this speed define time T
 SLEEP = 0.05 # 0.05 - Recomanded
 
-def smooth(servos,angles, wait = True):
+def smooth(servos,angles, wait = True, stop = True):
     
     #if is only 1 servo
     if not isinstance(angles, (list, tuple)):
@@ -151,11 +151,12 @@ def smooth(servos,angles, wait = True):
             time.sleep(SLEEP)
         
     #stop all servos
-    #for servo in servos:
-    #    servo.stop()
+    if stop:
+        for servo in servos:
+            servo.stop()
 
 #move all sevos - not smooth
-def allMove(servos,angles, wait = True):
+def allMove(servos,angles, wait = True, stop = True):
     
     #if is only 1 servo
     if not isinstance(angles, (list, tuple)):
@@ -165,10 +166,51 @@ def allMove(servos,angles, wait = True):
 
     for servo,ang in zip(servos,angles):
         servo.setAngle(ang)
-        servo.wait()
+        if wait:
+            servo.wait()
+        if stop:
+            servo.stop()
+
+
+#===================================================
+#=============Default Angles
+#===================================================
+ANG_DEFAULT = [0,0,0]
+ANG_TAKE = [0,0,0]#Angles for take the Obj
+ANG_BOX = [0,0,0]
+
+def take(servos):
+
+    #Default position
+    smooth(servos[:3],ANG_DEFAULT,stop=False)
+    servos[3].open()
+
+    #Obj position
+    smooth(servos[:3],ANG_TAKE,stop=False)
+    servos[3].close()
+
+    #Default position
+    smooth(servos[:3],ANG_DEFAULT,stop=False)
+
+    #Box position
+    smooth(servos[:3],ANG_BOX,stop=False)
+    servos[3].open()
+
+    #Default position
+    smooth(servos[:3],ANG_DEFAULT,stop=False)
+    servos[3].close()
+
+    #Stop all
+    for servo in servos:
         servo.stop()
 
 
+def start(servos):
+    for servo, angle in zip(servos,ANG_DEFAULT+[ANG_CLOSE]):
+        servo.angle = 90
+        servo.setAngle(0)
+        servo.setAngle(angle)
+        servo.wait()
 
 
 

@@ -1,5 +1,5 @@
 #>>>>>>>>		   Identify Objects		  	  <<<<<<<<<<#
-#		Cordeiro Libel - UTFPR - April of 2017		    #
+#		Cordeiro Libel - UTFPR - 2017		            #
 #-------------------------------------------------------#
 
 #My libraries
@@ -228,3 +228,27 @@ def drawCnts(img,objs_yes,objs_not = None, thickness = 4, attributes = False):
 				cv2.putText(img,line,pt_text,cv2.FONT_HERSHEY_SIMPLEX,thickness/5.0, (0,0,0),thickness/2 )
 
 	return img
+
+#find the position of the red ball
+def find_ball(img):
+	red_lower1 = (0, 50, 50)
+	red_upper1 = (20, 255, 255)
+	red_lower2 = (150, 50, 50)
+	red_upper2 = (179, 255, 255)
+
+	try :
+		img = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
+	except:
+		None
+
+	# blobs left in the mask
+	mask1 = cv2.inRange(img, red_lower1, red_upper1)
+	show(mask1,'mask1')
+	mask2 = cv2.inRange(img, red_lower2, red_upper2)
+	show(mask2,'mask2')
+	mask = cv2.bitwise_or(mask1,mask2)
+	show(mask,'mask')
+	mask = cv2.erode(mask, None, iterations=2)
+	mask = cv2.dilate(mask, None, iterations=2)
+	show(mask,'fim')
+	
