@@ -13,11 +13,11 @@ from commons import *
 PWM_MIN = 600
 PWM_MAX = 2400
 
-SPEED = 40/0.1 # 60degree/0.1s (datasheet)
-TIME_MIN = 10/SPEED#Never gives a time less than 20 degrees
+SPEED = 10/0.1 # 60degree/0.1s (datasheet)
+TIME_MIN = 20/SPEED#Never gives a time less than 20 degrees
 
-ANG_OPEN = -35
-ANG_CLOSE = 60
+ANG_OPEN = 25
+ANG_CLOSE = -10
 
 #===================================================
 #=============Init Servos GPIO 
@@ -58,10 +58,14 @@ class Servo(object):
         self.angle = ang
 
     def open(self):
-        smooth(self,ANG_OPEN)
+        self.setAngle(ANG_OPEN)
+        self.wait()
+        #smooth(self,ANG_OPEN)
         
     def close(self):
-        smooth(self,ANG_CLOSE)
+        self.setAngle(ANG_CLOSE)
+        self.wait()
+        #smooth(self,ANG_CLOSE)
         
     def stop(self):
         if runOnRasp():
@@ -175,25 +179,37 @@ def allMove(servos,angles, wait = True, stop = True):
 #===================================================
 #=============Default Angles
 #===================================================
-ANG_DEFAULT = [0,0,0]
-ANG_TAKE = [0,0,0]#Angles for take the Obj
-ANG_BOX = [0,0,0]
+ANG_DEFAULT = [-45,-30,50]
+ANG_TAKE = [30,-13,10]#Angles for take the Obj
+ANG_BOX = []
+ANG_BOX.append([-58,-5,12])
+ANG_BOX.append([-60,-39,12])
+ANG_BOX.append([-47,-6,12])
+ANG_BOX.append([-45,-39,12])
+ANG_BOX.append([-33,-5,15])
+ANG_BOX.append([-30,-39,12])
 
-def take(servos):
-
+objs_boxs = ['','','','','','']
+next_box = 0
+def vai(servos):
+    global objs_boxs, next_box
+    
     #Default position
     smooth(servos[:3],ANG_DEFAULT,stop=False)
     servos[3].open()
 
     #Obj position
-    smooth(servos[:3],ANG_TAKE,stop=False)
+    smooth(servos[:2],ANG_TAKE[:2],stop=False)
+    smooth(servos[2],ANG_TAKE[2],stop=False)
     servos[3].close()
 
     #Default position
-    smooth(servos[:3],ANG_DEFAULT,stop=False)
+    smooth(servos[2],ANG_DEFAULT[2],stop=False)
+    smooth(servos[:2],ANG_DEFAULT[:2],stop=False)
 
     #Box position
-    smooth(servos[:3],ANG_BOX,stop=False)
+    smooth(servos[:3],ANG_BOX[next_box],stop=False)
+    raw_input()
     servos[3].open()
 
     #Default position
@@ -203,7 +219,8 @@ def take(servos):
     #Stop all
     for servo in servos:
         servo.stop()
-
+    
+    next_box = (next_box+1)%6
 
 def start(servos):
     for servo, angle in zip(servos,ANG_DEFAULT+[ANG_CLOSE]):

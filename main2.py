@@ -14,7 +14,12 @@ from classify import *
 #=============================================
 #======MAIN
 #=============================================
-
+class Box:
+	nome = None
+	qtd = 0
+	def add():
+		qtd += 1
+		
 #---------------------------------------------
 #------SETUP
 #---------------------------------------------
@@ -32,6 +37,7 @@ if runOnRasp():
 #The last servo is the claw
 servos = [Servo(26),Servo(19),Servo(13),Servo(6)]
 
+box = [Box()]*6
 k=1
 
 #---------------------------------------------
@@ -79,6 +85,7 @@ while True :
 	#-------------------------------
 	print('='*50)
 	print('Frame: %d\tDetected: %d\tTime: %.2fms' %(k,len(objs_yes),tic()))
+	
 	k+=1
 
 

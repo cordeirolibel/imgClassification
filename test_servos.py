@@ -6,7 +6,7 @@ from commons import *
 from servo import *
 import Tkinter as tk #for mouse read
 
-speed = 1
+speed = 15
 
 ang1 = 0
 ang2 = 0
@@ -17,9 +17,9 @@ take = False
 def keys(event):
     global speed, ang1, ang2, ang3, take
     if event.char is 'r':
-        speed += 1
+        speed += 5
     elif event.char is 'f':
-        speed -= 1
+        speed -= 5
     elif event.char is 'w':
         ang1 += speed
     elif event.char is 's':
@@ -86,20 +86,22 @@ root.bind('<Key>', keys)
 #=====================================================
 
 #rasp pins:  6 13 19 26 gnd
-servos = [Servo(26),Servo(19),Servo(13)]
-servo_hand = Servo(6)
+servos = [Servo(6),Servo(19),Servo(13)]
+servo_hand = Servo(26)
 
 start(servos+[servo_hand])
 
 while(1):
 
     claw,angles = update()
+    vai(servos+[servo_hand])
+    print('foi')
     #smooth(servos,angles)
-    allMove(servos,angles)
-    if claw:
-        servo_hand.close()
-    else:
-        servo_hand.open()
+    #allMove(servos,angles,stop=False)
+    #if claw:
+    #    servo_hand.open()
+    #else:
+    #    servo_hand.close()
 
 
 
