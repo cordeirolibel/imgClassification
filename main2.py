@@ -10,15 +10,12 @@ from identify import *
 from servo import *
 from camera import *
 from classify import *
+from interface import *
 
 #=============================================
 #======MAIN
 #=============================================
-class Box:
-	nome = None
-	qtd = 0
-	def add():
-		qtd += 1
+
 		
 #---------------------------------------------
 #------SETUP
@@ -37,18 +34,20 @@ if runOnRasp():
 #The last servo is the claw
 servos = [Servo(26),Servo(19),Servo(13),Servo(6)]
 
-box = [Box()]*6
 k=1
+
+app = App()
 
 #---------------------------------------------
 #------LOOP
 #---------------------------------------------
+
 while True :
 	#-------------------------------
 	#=====>> STEP 1: Take the Image
 	#-------------------------------
 	if runOnRasp():
-		video()
+		video(app)
 		tic()
 		image = capture(True)
 	else:
@@ -70,15 +69,18 @@ while True :
 	#classity the objs
 	classify(objs_yes)
 
-	#Draw the contours and the center of mass
-	image = drawCnts(image,objs_yes,objs_not,thickness=3,attributes=True)  	
 	
-	show(image,'out')
-
 	#-------------------------------
 	#=====>> STEP 3: Movement
 	#-------------------------------
-	take(servos)
+	for obj in objs_yes:
+		box_num = app.whichBox(obj.name)
+		#Draw the contours and the center of mass
+		img_draw = drawCnts(image,objs_yes,objs_not,thickness=3, mark = obj)#,attributes=True)  	
+		show(img_draw,'out')
+		cv2.waitKey(100)
+
+		go(servos,box_num)
 
 	#-------------------------------
 	#=====>> STEP 4: Print

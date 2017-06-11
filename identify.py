@@ -169,7 +169,7 @@ def shadowRemove(img, force_rasp = False):
 	return img
 
 #Draw the contours and the center of mass
-def drawCnts(img,objs_yes,objs_not = None, thickness = 4, attributes = False):
+def drawCnts(img,objs_yes,objs_not = None, thickness = 4, attributes = False, mark = None):
 
 	img = img.copy()
 
@@ -196,7 +196,11 @@ def drawCnts(img,objs_yes,objs_not = None, thickness = 4, attributes = False):
 				box = cv2.cv.BoxPoints(obj.rect)
 				box = np.array(box)
 			box = toInt(box)
-			cv2.drawContours(img,[box],-1,(255,50,255),thickness)
+			if obj is mark:
+				cv2.drawContours(img,[box],-1,(0,255,255),thickness)
+			else:
+				cv2.drawContours(img,[box],-1,(255,50,255),thickness)
+
 
 	#Draw the center of mass of each object in blue
 	if not objs_yes is None:

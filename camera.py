@@ -46,7 +46,7 @@ def capture(cam = False):
     return img
         
 #start a video, close the window with key 'q'
-def video():
+def video(app = None):
     global camera
     resolution = camera.resolution 
     
@@ -70,10 +70,16 @@ def video():
         # clear the stream in preparation for the next frame
         rawCapture.seek(0)
         rawCapture.truncate()
-     
+        
+        #====Interruptions
+        if not app is None:
+            if app.take is True:
+                app.take = False
+                break
+                
         # exit
         if key == ord("q"):
-            quit()
+            os._exit(1)
             
         # exit loop
         elif key == ord(" "):

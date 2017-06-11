@@ -13,7 +13,7 @@ from commons import *
 PWM_MIN = 600
 PWM_MAX = 2400
 
-SPEED = 10/0.1 # 60degree/0.1s (datasheet)
+SPEED = 20/0.1 # 60degree/0.1s (datasheet)
 TIME_MIN = 20/SPEED#Never gives a time less than 20 degrees
 
 ANG_OPEN = 25
@@ -27,7 +27,7 @@ if runOnRasp(): #running only in raspberry
     pigpio = pigpio.pi()
     if not pigpio.connected:
         print("try >> sudo pigpiod")
-        exit()
+        os._exit(1)
 
 #===================================================
 #=============Servo Class
@@ -189,39 +189,39 @@ ANG_BOX.append([-45,-39,12])
 ANG_BOX.append([-33,-5,15])
 ANG_BOX.append([-30,-39,12])
 
-objs_boxs = ['','','','','','']
-next_box = 0
-def vai(servos):
-    global objs_boxs, next_box
-    
+def go(servos, box_num):
+
     #Default position
     smooth(servos[:3],ANG_DEFAULT,stop=False)
     servos[3].open()
+    #print('Default')
 
     #Obj position
     smooth(servos[:2],ANG_TAKE[:2],stop=False)
     smooth(servos[2],ANG_TAKE[2],stop=False)
     servos[3].close()
+    #print('Obj position')
 
     #Default position
     smooth(servos[2],ANG_DEFAULT[2],stop=False)
     smooth(servos[:2],ANG_DEFAULT[:2],stop=False)
+    #print('Default')
 
     #Box position
-    smooth(servos[:3],ANG_BOX[next_box],stop=False)
-    raw_input()
+    smooth(servos[:3],ANG_BOX[box_num],stop=False)
     servos[3].open()
+    #print('Box '+str(box_num)+ ' position')
 
     #Default position
     smooth(servos[:3],ANG_DEFAULT,stop=False)
     servos[3].close()
+    #print('Default')
 
     #Stop all
     for servo in servos:
         servo.stop()
-    
-    next_box = (next_box+1)%6
 
+#go to start position
 def start(servos):
     for servo, angle in zip(servos,ANG_DEFAULT+[ANG_CLOSE]):
         servo.angle = 90
