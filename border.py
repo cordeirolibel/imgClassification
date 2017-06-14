@@ -142,8 +142,6 @@ def cutBorder(img, fix_size = True, size = SIDE, inv = False, draw = False):
 		pts[0]=pts[1].copy()
 		pts[1]=tmp.copy()
 
-		print(pts)
-		print(four_points)
 		cv2.drawContours(small_img,[pts],-1,(255,0,0),5)
 	#show(small_img)
 

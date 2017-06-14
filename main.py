@@ -47,12 +47,12 @@ while True :
 	classify(objs_yes)
 
 	#Draw the contours and the center of mass
-	image = drawCnts(image,objs_yes,objs_not,thickness=3)#,attributes=True)  	
+	image = drawCnts(image,objs_yes,objs_not,thickness=4)#,attributes=True)  	
 	
 	show(image,'out')
 	#cv2.waitKey(0)
 	#save image
-	#cv2.imwrite('imgs/teste.jpg',image)
+	cv2.imwrite('imgs/saida.jpg',image)
 	
 	if not runOnRasp():
 		break

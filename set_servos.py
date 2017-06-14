@@ -8,7 +8,7 @@ from camera import *
 import Tkinter as tk #for mouse read
 from sklearn.svm import SVC
 
-speed = 1
+speed = 15
 
 ang1 = 0
 ang2 = 0
@@ -99,12 +99,15 @@ if runOnRasp():
 	camera.resolution = (1296, 976)
 	#camera.resolution = (1920, 1088)
 	#camera.resolution = (640, 480)
-		
+
+data_in = []
+data_out = []
+
 while(1):
 
 	claw,angles = update()
-	#smooth(servos,angles)
-	allMove(servos,angles)
+	smooth(servos,angles)
+	#allMove(servos,angles)
 	if claw:
 		servo_hand.close()
 	else:
@@ -119,16 +122,26 @@ while(1):
 			image = capture()
 		
 		img_cut =  cutBorder(image, draw = True)
-		show(img_cut,'cut')
+		
 		show(image,'original')
 
-		pt = find_ball(img_cut)
+		#find the position of the red ball
+		img,pt = find_ball(img_cut)
+
+		#save the data
+		data_in.append(pt)
+		data_out.append(angles)
+
+		show(img,'final')
 
 		#escape
 		if not runOnRasp():
 			cv2.waitKey(0)
 			break
 
+print(data_in)
+print(data_out)
 
+model = Pipeline([('poly', PolynomialFeatures(degree=3)),('linear', LinearRegression(fit_intercept=False))])
 
 cv2.destroyAllWindows()

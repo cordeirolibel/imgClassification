@@ -5,7 +5,7 @@
 #My libraries
 from commons import *
 
-# Find the largests contours
+# Find the contours in range
 def categoryCnts(img,contours):
 	objs_yes = [] #Accepted Objects 
 	objs_not = [] #Refused Objects
@@ -29,8 +29,7 @@ def identifyObjects(img, draw = True, inv = False,force_rasp = False):
 
 	#remove shawdow, because it is not an object
 	img = shadowRemove(img,force_rasp)
-
-	#show(img,"sem sombra")
+	
 	image_b = binaryImg(img, inv = inv)
 
 	#Erosion and Dilate for connect the near objects
@@ -240,19 +239,44 @@ def find_ball(img):
 	red_lower2 = (150, 50, 50)
 	red_upper2 = (179, 255, 255)
 
-	try :
-		img = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
+	img_s = shadowRemove(img)
+
+	try :#to HSV if is not
+		img_h = cv2.cvtColor(img_s, cv2.COLOR_BGR2HSV)
 	except:
-		None
+		img_h = img_s
 
 	# blobs left in the mask
-	mask1 = cv2.inRange(img, red_lower1, red_upper1)
-	show(mask1,'mask1')
-	mask2 = cv2.inRange(img, red_lower2, red_upper2)
-	show(mask2,'mask2')
+	mask1 = cv2.inRange(img_h, red_lower1, red_upper1)
+	mask2 = cv2.inRange(img_h, red_lower2, red_upper2)
+
 	mask = cv2.bitwise_or(mask1,mask2)
-	show(mask,'mask')
+
 	mask = cv2.erode(mask, None, iterations=2)
-	mask = cv2.dilate(mask, None, iterations=2)
-	show(mask,'fim')
+	img_b = cv2.dilate(mask, None, iterations=2)
+	#show(img_b,'fim')
 	
+	#find all the contours
+	if cv2.__version__[0] is '3':
+		_,contours,_ = cv2.findContours(img_b,cv2.RETR_LIST ,cv2.CHAIN_APPROX_SIMPLE )
+	else:#version 2.x.x
+		contours,_ = cv2.findContours(img_b,cv2.RETR_LIST ,cv2.CHAIN_APPROX_SIMPLE )
+
+	#filter the contours
+	obj,_ = categoryCnts(img,contours)
+
+	if type(obj) is list:
+		obj = obj[0]
+
+	#Find the center of mass of object
+	obj.moments(img.shape)
+
+	#==Draw
+	img = cv2.drawContours(img,[obj.cnt],-1,(0,255,255),4)
+	cv2.circle(img, (toInt(obj.pt_img)),10, (0,0,0),-1)
+	#converting points
+	pt_text = (int(obj.pt_img[0])+25,int(obj.pt_img[1])+25)
+	pt_text = (pt_text[0],pt_text[1]+20)
+	cv2.putText(img, str(obj.pt),pt_text,cv2.FONT_HERSHEY_SIMPLEX,1.0, (0,0,0),3 )
+	
+	return img, obj.pt
