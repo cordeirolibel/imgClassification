@@ -13,10 +13,10 @@ from commons import *
 PWM_MIN = 600
 PWM_MAX = 2400
 
-SPEED = 20/0.1 # 60degree/0.1s (datasheet)
+SPEED = 10/0.1 # 60degree/0.1s (datasheet)
 TIME_MIN = 20/SPEED#Never gives a time less than 20 degrees
 
-ANG_OPEN = 25
+ANG_OPEN = 35
 ANG_CLOSE = -10
 
 #===================================================
@@ -182,12 +182,12 @@ def allMove(servos,angles, wait = True, stop = True):
 ANG_DEFAULT = [-45,-30,50]
 ANG_TAKE = [30,-13,10]#Angles for take the Obj
 ANG_BOX = []
-ANG_BOX.append([-58,-5,12])
-ANG_BOX.append([-60,-39,12])
-ANG_BOX.append([-47,-6,12])
-ANG_BOX.append([-45,-39,12])
-ANG_BOX.append([-33,-5,15])
-ANG_BOX.append([-30,-39,12])
+ANG_BOX.append([-60,-20,15])
+ANG_BOX.append([-62,-46,15])
+ANG_BOX.append([-48,-20,15])
+ANG_BOX.append([-46,-50,15])
+ANG_BOX.append([-34,-18,20])
+ANG_BOX.append([-28,-46,20])
 
 def go(servos, box_num, angles = None):
     if angles is None:
@@ -202,6 +202,7 @@ def go(servos, box_num, angles = None):
     smooth(servos[:2],angles[:2],stop=False)
     smooth(servos[2],angles[2],stop=False)
     servos[3].close()
+    #raw_input()
     #print('Obj position')
 
     #Default position
@@ -211,6 +212,7 @@ def go(servos, box_num, angles = None):
 
     #Box position
     smooth(servos[:3],ANG_BOX[box_num],stop=False)
+    #raw_input()
     servos[3].open()
     #print('Box '+str(box_num)+ ' position')
 
@@ -225,24 +227,27 @@ def go(servos, box_num, angles = None):
 
 
 def regression(pt):
+
     #for the regression function
     #http://onlineregression.sdsu.edu/
-    a_servo1 = 0.002784
-    b1_servo1 = 0.692555
-    b2_servo1 = 1.142578
-    a_servo2 = 0.002784
-    b1_servo2 = 0.692555
-    b2_servo2 = 1.142578
-
-    ang3 = 12
+    a_servo1 = 8.189135
+    b1_servo1 = 0.061327
+    b2_servo1 = -0.01586
+    a_servo2 = 58.41025
+    b1_servo2 = -0.03904
+    b2_servo2 = -0.09302
+    a_servo3 = 17.23562
+    b1_servo3 = 0.000149
+    b2_servo3 = -0.00737
 
     #no linear
-    ang1 = a_servo1*pt[0]**b1_servo1*pt[1]**b2_servo2
-    ang2 = a_servo2*pt[0]**b1_servo1*pt[1]**b2_servo2
+    #ang1 = a_servo1*pt[0]**b1_servo1*pt[1]**b2_servo2
+    #ang2 = a_servo2*pt[0]**b1_servo1*pt[1]**b2_servo2
 
     #linear
-    #ang1 = a_servo1+b1_servo1*pt[0]+b2_servo1*pt[1]
-    #ang2 = a_servo2+b1_servo2*pt[0]+b2_servo2*pt[1]
+    ang1 = a_servo1+b1_servo1*pt[0]+b2_servo1*pt[1]
+    ang2 = a_servo2+b1_servo2*pt[0]+b2_servo2*pt[1]
+    ang3 = a_servo3+b1_servo3*pt[0]+b2_servo3*pt[1]
 
     return [ang1,ang2,ang3]
 
@@ -253,6 +258,7 @@ def start(servos):
         servo.setAngle(0)
         servo.setAngle(angle)
         servo.wait()
+        servo.stop()
 
 
 

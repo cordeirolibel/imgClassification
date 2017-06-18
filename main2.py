@@ -32,8 +32,9 @@ if runOnRasp():
 #=====set camera
 #rasp pins:  6 13 19 26 gnd
 #The last servo is the claw
-servos = [Servo(26),Servo(19),Servo(13),Servo(6)]
+servos = [Servo(6),Servo(19),Servo(13),Servo(26)]
 
+start(servos)
 k=1
 
 app = App()
@@ -77,11 +78,12 @@ while True :
 		#Draw the contours and the center of mass
 		img_draw = drawCnts(image,objs_yes,objs_not,thickness=3, mark = obj)#,attributes=True)  	
 		show(img_draw,'out')
-		cv2.waitKey(100)
+		cv2.waitKey(300)
 
-		#angs = regression(obj.pt)
+		angs = regression(obj.pt)
+		go(servos,box_num,angles = angs)
 
-		go(servos,box_num)#angles = angs)
+	#go(servos,box_num)#angles = angs)
 
 	#-------------------------------
 	#=====>> STEP 4: Print

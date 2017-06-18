@@ -8,7 +8,7 @@ from commons import *
 from identify import *
 from classify import *
 import cPickle as pickle
-
+import random
 
 #=============================================
 #======SAVE IMAGE OF EACH OBJECT
@@ -46,7 +46,7 @@ while True:
 
 #number of each object
 print(n_objs)
-
+random.shuffle(objs)
 #Calculate attributes for the Classification
 #attributes(None,objs)
 

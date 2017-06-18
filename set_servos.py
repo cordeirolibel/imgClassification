@@ -5,20 +5,22 @@
 from commons import *
 from servo import *
 from camera import *
+from interface import *
 import Tkinter as tk #for mouse read
 from sklearn.svm import SVC
 
 speed = 15
 
-ang1 = 0
-ang2 = 0
-ang3 = 0
+ang1 = ANG_DEFAULT[0]
+ang2 = ANG_DEFAULT[1]
+ang3 = ANG_DEFAULT[2]
 take = False
 photo = False
+end = False
 
 #set speed of scroll and quit
 def keys(event):
-	global speed, ang1, ang2, ang3, take, photo
+	global speed, ang1, ang2, ang3, take, photo, end
 	if event.char is 'r':
 		speed += 5
 	elif event.char is 'f':
@@ -45,6 +47,8 @@ def keys(event):
 		take = False
 	elif event.char is ' ':
 		photo = True
+	elif event.char is 'p':
+		end = True
 	elif event.char is 'k':
 		root.quit() 
 		exit()
@@ -94,8 +98,9 @@ root.bind('<Key>', keys)
 #=====================================================
 
 #rasp pins:  6 13 19 26 gnd
-servos = [Servo(26),Servo(19),Servo(13)]
-servo_hand = Servo(6)
+servos = [Servo(6),Servo(19),Servo(13)]
+servo_hand = Servo(26)
+start(servos+[servo_hand])
 
 if runOnRasp():
 	#camera.resolution = (3280, 2464)
@@ -115,38 +120,47 @@ else:
 
 four_pts =  cutBorder(image,return_four_points=True, draw = True)
 
+cv2.waitKey(500)
+
 k=1
+
+#app = App()
 
 while(1):
 
 	claw,angles = update()
-	smooth(servos,angles)
+	smooth(servos,angles, stop=False)
 	#allMove(servos,angles)
 	if claw:
 		servo_hand.close()
 	else:
 		servo_hand.open()
-
+	
+	if end:
+		break
+		
 	if photo:
 		photo = False
 
 		print('Foto: '+str(k))
 
 		if runOnRasp():
+			#video(app)
 			image = capture(True)
 		else:
 			image = capture()
 		
 		img_cut =  cutBorder(image, four_points = four_pts)
-
+		
 		#find the position of the red ball
 		img,pt = find_ball(img_cut)
-
+		
 		#save the data
 		data_in.append(pt)
 		data_out.append(angles)
 
 		show(img,'final')
+		cv2.waitKey(300)
 
 		#escape
 		if not runOnRasp():

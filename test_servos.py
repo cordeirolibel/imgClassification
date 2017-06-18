@@ -97,10 +97,10 @@ start(servos+[servo_hand])
 
 while(1):
 
-    #claw,angles = update()
+    claw,angles = update()
     #vai(servos+[servo_hand])
     print('foi')
-    smooth(servos,angles)
+    smooth(servos,angles, stop=False)
     #allMove(servos,angles,stop=False)
     if claw:
         servo_hand.open()

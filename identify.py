@@ -270,13 +270,19 @@ def find_ball(img):
 
 	#Find the center of mass of object
 	obj.moments(img.shape)
-
+	
+	
+	
 	#==Draw
-	img = cv2.drawContours(img,[obj.cnt],-1,(0,255,255),4)
+	cv2.drawContours(img,[obj.cnt],-1,(0,255,255),4)
+
 	cv2.circle(img, (toInt(obj.pt_img)),10, (0,0,0),-1)
+	
 	#converting points
 	pt_text = (int(obj.pt_img[0])+25,int(obj.pt_img[1])+25)
 	pt_text = (pt_text[0],pt_text[1]+20)
 	cv2.putText(img, str(obj.pt),pt_text,cv2.FONT_HERSHEY_SIMPLEX,1.0, (0,0,0),3 )
 	
+	
+		
 	return img, obj.pt
