@@ -6,6 +6,7 @@ from commons import *
 from border import *
 from identify import *
 FILE = 'imgs/forTrain/img25.jpg'
+#FILE = 'imgs/foto2.jpg'
 
 #===================================================
 #=============Init Camera

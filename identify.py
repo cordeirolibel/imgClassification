@@ -232,8 +232,20 @@ def drawCnts(img,objs_yes,objs_not = None, thickness = 4, attributes = False, ma
 
 	return img
 
+#sort objs by Y - Decreasing
+def sortObjs(objs):
+	if len(objs) <= 1:
+		return objs
+	#bubbleSort
+	for i in range(len(objs)):
+		for j in range(len(objs)-1):
+			if objs[j].pt[1]<objs[j+1].pt[1]:
+				aux = objs[j+1]
+				objs[j+1] = objs[j]
+				objs[j] = aux
+	return objs
 #find the position of the red ball
-def find_ball(img):
+def findBall(img):
 	red_lower1 = (0, 50, 50)
 	red_upper1 = (20, 255, 255)
 	red_lower2 = (150, 50, 50)

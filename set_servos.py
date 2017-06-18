@@ -153,7 +153,7 @@ while(1):
 		img_cut =  cutBorder(image, four_points = four_pts)
 		
 		#find the position of the red ball
-		img,pt = find_ball(img_cut)
+		img,pt = findBall(img_cut)
 		
 		#save the data
 		data_in.append(pt)

@@ -64,26 +64,31 @@ while True :
 	#Contours - identify Objects
 	objs_yes,objs_not = identifyObjects(image)
 
-	#Calculate attributes for the Deep Learning
-	attributes(image,objs_yes)
 
-	#classity the objs
-	classify(objs_yes)
-	
-	#-------------------------------
-	#=====>> STEP 3: Movement
-	#-------------------------------
-	for obj in objs_yes:
-		box_num = app.whichBox(obj.name)
-		#Draw the contours and the center of mass
-		img_draw = drawCnts(image,objs_yes,objs_not,thickness=3, mark = obj)#,attributes=True)  	
-		show(img_draw,'out')
-		cv2.waitKey(300)
+	if not len(objs_yes) is 0:
 
-		angs = regression(obj.pt)
-		go(servos,box_num,angles = angs)
+		#Calculate attributes for the Deep Learning
+		attributes(image,objs_yes)
 
-	#go(servos,box_num)#angles = angs)
+		#classity the objs
+		classify(objs_yes)
+		
+		objs_yes = sortObjs(objs_yes)
+
+		#-------------------------------
+		#=====>> STEP 3: Movement
+		#-------------------------------
+		for obj in objs_yes:
+			box_num = app.whichBox(obj.name)
+			#Draw the contours and the center of mass
+			img_draw = drawCnts(image,objs_yes,objs_not,thickness=3, mark = obj)#,attributes=True)  	
+			show(img_draw,'out')
+			cv2.waitKey(300)
+
+			angs = regression(obj.pt)
+			go(servos,box_num,angles = angs)
+
+		#go(servos,box_num)#angles = angs)
 
 	#-------------------------------
 	#=====>> STEP 4: Print
