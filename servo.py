@@ -189,16 +189,18 @@ ANG_BOX.append([-45,-39,12])
 ANG_BOX.append([-33,-5,15])
 ANG_BOX.append([-30,-39,12])
 
-def go(servos, box_num):
-
+def go(servos, box_num, angles = None):
+    if angles is None:
+        angles = ANG_TAKE
+        
     #Default position
     smooth(servos[:3],ANG_DEFAULT,stop=False)
     servos[3].open()
     #print('Default')
 
     #Obj position
-    smooth(servos[:2],ANG_TAKE[:2],stop=False)
-    smooth(servos[2],ANG_TAKE[2],stop=False)
+    smooth(servos[:2],angles[:2],stop=False)
+    smooth(servos[2],angles[2],stop=False)
     servos[3].close()
     #print('Obj position')
 
@@ -220,6 +222,29 @@ def go(servos, box_num):
     #Stop all
     for servo in servos:
         servo.stop()
+
+
+def regression(pt):
+    #for the regression function
+    #http://onlineregression.sdsu.edu/
+    a_servo1 = 0.002784
+    b1_servo1 = 0.692555
+    b2_servo1 = 1.142578
+    a_servo2 = 0.002784
+    b1_servo2 = 0.692555
+    b2_servo2 = 1.142578
+
+    ang3 = 12
+
+    #no linear
+    ang1 = a_servo1*pt[0]**b1_servo1*pt[1]**b2_servo2
+    ang2 = a_servo2*pt[0]**b1_servo1*pt[1]**b2_servo2
+
+    #linear
+    #ang1 = a_servo1+b1_servo1*pt[0]+b2_servo1*pt[1]
+    #ang2 = a_servo2+b1_servo2*pt[0]+b2_servo2*pt[1]
+
+    return [ang1,ang2,ang3]
 
 #go to start position
 def start(servos):

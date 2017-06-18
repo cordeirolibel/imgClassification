@@ -103,7 +103,7 @@ def findCorner(points,x_max,y_max):
 
 	return four_points
 
-def cutBorder(img, fix_size = True, size = SIDE, inv = False, draw = False):
+def cutBorder(img, fix_size = True, size = SIDE, inv = False, draw = False,four_points = None, return_four_points = False):
 	# ==> Step 1: Resize 
 	#We have 2 options (uncomment):
 
@@ -132,9 +132,10 @@ def cutBorder(img, fix_size = True, size = SIDE, inv = False, draw = False):
 	cnt = largestCnt(contours)[:,0,:]
 
 	#simplify in 4 points
-	four_points = findCorner(cnt,small_img.shape[1],small_img.shape[0])
+	if four_points is None:
+		four_points = findCorner(cnt,small_img.shape[1],small_img.shape[0])
 
-	#uncomment to print contours
+	#print contours
 	if draw:
 		pts = four_points.copy()
 		#swap
@@ -143,8 +144,8 @@ def cutBorder(img, fix_size = True, size = SIDE, inv = False, draw = False):
 		pts[1]=tmp.copy()
 
 		cv2.drawContours(small_img,[pts],-1,(255,0,0),5)
-	#show(small_img)
-
+		show(small_img)
+	
 	# ==> Step 4: Cut
 
 	#Coordinates of the corresponding quadrangle vertices in the destination image.
@@ -167,5 +168,10 @@ def cutBorder(img, fix_size = True, size = SIDE, inv = False, draw = False):
 		warped = cv2.warpPerspective(img, M, (size, size))
 	else:
 		warped = cv2.warpPerspective(img, M, (img_size[1], img_size[0]))
+
+
+
+	if return_four_points is True:
+		return four_points
 
 	return warped

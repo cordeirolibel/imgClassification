@@ -20,13 +20,17 @@ def keys(event):
         speed += 5
     elif event.char is 'f':
         speed -= 5
-    elif event.char is 'w':
-        ang1 += speed
-    elif event.char is 's':
-        ang1 -= speed
+    if event.char is 't':
+        speed += 1
+    elif event.char is 'g':
+        speed -= 1
     elif event.char is 'a':
-        ang2 += speed
+        ang1 += speed
     elif event.char is 'd':
+        ang1 -= speed
+    elif event.char is 'w':
+        ang2 += speed
+    elif event.char is 's':
         ang2 -= speed
     elif event.char is 'q':
         ang3 += speed
@@ -93,15 +97,15 @@ start(servos+[servo_hand])
 
 while(1):
 
-    claw,angles = update()
-    vai(servos+[servo_hand])
+    #claw,angles = update()
+    #vai(servos+[servo_hand])
     print('foi')
-    #smooth(servos,angles)
+    smooth(servos,angles)
     #allMove(servos,angles,stop=False)
-    #if claw:
-    #    servo_hand.open()
-    #else:
-    #    servo_hand.close()
+    if claw:
+        servo_hand.open()
+    else:
+        servo_hand.close()
 
 
 

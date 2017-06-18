@@ -68,7 +68,6 @@ while True :
 
 	#classity the objs
 	classify(objs_yes)
-
 	
 	#-------------------------------
 	#=====>> STEP 3: Movement
@@ -80,7 +79,9 @@ while True :
 		show(img_draw,'out')
 		cv2.waitKey(100)
 
-		go(servos,box_num)
+		#angs = regression(obj.pt)
+
+		go(servos,box_num)#angles = angs)
 
 	#-------------------------------
 	#=====>> STEP 4: Print

@@ -57,12 +57,15 @@ Button(root, text='(#) coin', command=coin).pack()
 root.protocol("WM_DELETE_WINDOW", on_closing)
 
 k=1
+#k=38
 while True:
 	#open all images with name
-	image = cv2.imread('imgs/img'+str(k)+'.jpg')
+	image = cv2.imread('imgs/forTrain/img'+str(k)+'.jpg')
 
 	if image is None:
 		break
+	#if k is 50:
+	#	break
 
 	image = cutBorder(image)
 	

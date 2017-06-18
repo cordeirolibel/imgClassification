@@ -20,16 +20,20 @@ photo = False
 def keys(event):
 	global speed, ang1, ang2, ang3, take, photo
 	if event.char is 'r':
-		speed += 1
+		speed += 5
 	elif event.char is 'f':
+		speed -= 5
+	if event.char is 't':
+		speed += 1
+	elif event.char is 'g':
 		speed -= 1
-	elif event.char is 'w':
-		ang1 += speed
-	elif event.char is 's':
-		ang1 -= speed
 	elif event.char is 'a':
-		ang2 += speed
+		ang1 += speed
 	elif event.char is 'd':
+		ang1 -= speed
+	elif event.char is 'w':
+		ang2 += speed
+	elif event.char is 's':
 		ang2 -= speed
 	elif event.char is 'q':
 		ang3 += speed
@@ -103,6 +107,16 @@ if runOnRasp():
 data_in = []
 data_out = []
 
+#========== Save the four points
+if runOnRasp():
+	image = capture(True)
+else:
+	image = capture()
+
+four_pts =  cutBorder(image,return_four_points=True, draw = True)
+
+k=1
+
 while(1):
 
 	claw,angles = update()
@@ -116,14 +130,14 @@ while(1):
 	if photo:
 		photo = False
 
+		print('Foto: '+str(k))
+
 		if runOnRasp():
 			image = capture(True)
 		else:
 			image = capture()
 		
-		img_cut =  cutBorder(image, draw = True)
-		
-		show(image,'original')
+		img_cut =  cutBorder(image, four_points = four_pts)
 
 		#find the position of the red ball
 		img,pt = find_ball(img_cut)
@@ -136,12 +150,25 @@ while(1):
 
 		#escape
 		if not runOnRasp():
-			cv2.waitKey(0)
 			break
 
-print(data_in)
-print(data_out)
+		k+=1
 
-model = Pipeline([('poly', PolynomialFeatures(degree=3)),('linear', LinearRegression(fit_intercept=False))])
 
+#========== Print
+print ("Data in:")
+for data in data_in:
+	line = ''
+	for val in data:
+		line+=str(val)+'\t'
+	print(line)
+print ("Data out:")
+for data in data_out:
+	line = ''
+	for val in data:
+		line+=str(val)+'\t'
+	print(line)
+
+
+cv2.waitKey(0)
 cv2.destroyAllWindows()
