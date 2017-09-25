@@ -14,11 +14,11 @@ numpy, time, scikit-learn, pigpio
 
 ## Images 
 
-![alt text](https://image.ibb.co/cjE9K5/classi.png)
+![alt text](https://preview.ibb.co/kqMpK5/classi.png)
 
-![alt text](https://image.ibb.co/gQBdCQ/figuras.png)
+![alt text](https://preview.ibb.co/d4Zbz5/figuras.png)
 
-![alt text](https://image.ibb.co/kSTfRk/projeto.png)
+![alt text](https://preview.ibb.co/nkcJCQ/projeto.png)
 
 https://www.thingiverse.com/thing:1015238
 ![alt text](https://image.ibb.co/bHJQsQ/garra.jpg)
